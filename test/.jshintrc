@@ -1,0 +1,11 @@
+{
+  "mocha": true,
+
+  "globals": {
+    "require": false,
+    "exports": false,
+    "module": false,
+
+    "expect": false
+  }
+}
