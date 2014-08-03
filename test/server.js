@@ -8,6 +8,9 @@ var path = require('path')
 
 var app = connect()
 
+var morgan = require('morgan')
+app.use(morgan('combined'))
+
 var serveStatic = require('serve-static')
 app.use(serveStatic(__dirname))
 

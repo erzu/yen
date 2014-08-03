@@ -34,3 +34,25 @@ TODO
 ### Tweening
 
 TODO
+
+## Tests - 测试
+
+我们使用 connect 配合 serve-static、morgan、helmsmen 等中间件运行 HTTP 服务，默认端口 3000
+
+```bash
+$ node test/server.js
+$ open http://localhost:3000/runner.html
+```
+
+### mocha & expect.js
+
+我们用的测试框架是 mocha，用的断言写法是 expect.js 风格。
+
+### totoro
+
+我们使用 totoro 运行多个浏览器的集成测试：
+
+```bash
+$ node test/server.js
+$ totoro --runner http://<ip>:3000/runner.html
+```
