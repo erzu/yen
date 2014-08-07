@@ -52,8 +52,8 @@ TODO
 我们使用 connect 配合 serve-static、morgan、helmsmen 等中间件运行 HTTP 服务，默认端口 3000
 
 ```bash
-$ node test/server.js
-$ open http://localhost:3000/runner.html
+$ tnpm start
+$ open http://localhost:3000/test/runner.html
 ```
 
 ### mocha & expect.js
@@ -66,5 +66,12 @@ $ open http://localhost:3000/runner.html
 
 ```bash
 $ node test/server.js
-$ totoro --runner http://<ip>:3000/runner.html
+$ totoro --runner http://`ifconfig en0 inet | grep -oE --max-count=1 '\\d+.\\d+.\\d+.\\d+' | head -1`/test/runner.html
+```
+
+也可以直接执行：
+
+```bash
+$ tnpm start
+$ tnpm test
 ```
