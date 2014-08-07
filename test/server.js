@@ -11,7 +11,7 @@ var PORT = 3000
 var app = connect()
 
 var serveStatic = require('serve-static')
-app.use(serveStatic(__dirname))
+app.use(serveStatic(path.join(__dirname, '..')))
 
 var helmsmen = require('@ali/helmsmen')
 app.use(helmsmen({

@@ -53,7 +53,7 @@ describe('yen', function() {
           <li class="entry"></li>
           <li class="entry entry-last"></li>
         </ul>
-        <div class="fixture-attr" data-foo="bar"></div>
+        <div class="fixture-attr" data-foo="Foo" data-bar></div>
         <div class="fixture-html">Hello yen</div>
         <div class="fixture-css" style="width: 100px; padding-top: 20px; padding-bottom: 20px; margin-left: 20px;"></div>
         <div class="fixture-append"></div>
@@ -83,13 +83,15 @@ describe('yen', function() {
 
     it('.attr', function() {
       var el = $('.fixture-attr')
-      expect(el.attr('data-foo')).to.equal('bar')
+      expect(el.attr('data-foo')).to.equal('Foo')
       expect(el.attr('data-foo', 'egg').attr('data-foo')).to.equal('egg')
     })
 
     it('.hasAttr', function() {
       var el = $('.fixture-attr')
       expect(el.hasAttr('data-foo')).to.be(true)
+      expect(el.hasAttr('data-bar')).to.be(true)
+      expect(el.hasAttr('data-missing')).to.be(false)
     })
 
     it('.html', function() {
@@ -100,8 +102,12 @@ describe('yen', function() {
 
     it('.css', function() {
       var el = $('.fixture-css')
-      expect(el.css('margin')).to.equal('10px 10px 10px 20px')
-      expect(el.css('padding')).to.equal('20px 10px')
+
+      // The return value of window.computedStyle in Firefox & Safari 5
+      // does not support shorthand property.
+      //
+      // expect(el.css('margin')).to.equal('10px 10px 10px 20px')
+      // expect(el.css('padding')).to.equal('20px 10px')
       expect(el.css('padding-top')).to.equal('20px')
       expect(el.css('paddingBottom')).to.equal('20px')
     })

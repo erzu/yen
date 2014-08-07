@@ -121,7 +121,10 @@ function _matchesDescendantSelectorList(el, selector, context) {
 function _matchesSimpleSelectorList(el, selector) {
   var matchResult
   var simpleSelectorListRegex = /[.#:][\w-]+|\[(.+?)(?:=(["']?)(.*?)\1)?]|^[a-z-]+/g
-  while(matchResult = simpleSelectorListRegex.exec(selector)){
+
+  // See http://www.jshint.com/docs/options/#boss on why this syntax
+  // Maybe I should consider taking eslint a closer look.
+  while ((matchResult = simpleSelectorListRegex.exec(selector))) {
     var simpleSelector = matchResult[0]
     if(!_matches(el, simpleSelector)){
       return false
@@ -180,7 +183,7 @@ function match(node, tag) {
 }
 
 function _isAncestor(ancestor, descendant) {
-  while(descendant = descendant.parentNode ){
+  while ((descendant = descendant.parentNode)) {
     if (descendant === ancestor) {
       return true
     }
@@ -199,15 +202,26 @@ function _getFirstElementChild(node) {
   return null
 }
 
-// http://www.quirksmode.org/dom/getstyles.html
+/*
+ * Legacy IEs don't have window.getComputedStyle. They have got
+ * .currentStyle property on DOM elements instead. But the property
+ * value of that object might not be absolute.
+ *
+ * The return value of window.computedStyle in Firefox & Safari 5
+ * does not support access via shorthand property, such as margin, padding, font.
+ *
+ * References:
+ * - http://www.quirksmode.org/dom/getstyles.html
+ * - http://ie.microsoft.com/testdrive/HTML5/getComputedStyle/
+ */
 function _getStyle(el, prop) {
-  if (el.currentStyle) {
-    prop = _.camelize(prop)
-    return el.currentStyle[prop]
-  }
-  else if (win.getComputedStyle) {
+  if (win.getComputedStyle) {
     prop = _.dasherize(prop)
     return getComputedStyle(el).getPropertyValue(prop)
+  }
+  else if (el.currentStyle) {
+    prop = _.camelize(prop)
+    return el.currentStyle[prop]
   }
 }
 
@@ -225,6 +239,7 @@ function _regulate(value, prop) {
 
   return value
 }
+
 
 /*
  * Array-like object constructor
@@ -276,7 +291,7 @@ yen.fn.find = function(selector) {
 yen.fn.next = function(tag) {
   var node = this[0]
 
-  while (node = node.nextSibling) {
+  while ((node = node.nextSibling)) {
     if (is(node, 1)) {
       if (!tag || match(node, tag)) {
         break
