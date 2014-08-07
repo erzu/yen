@@ -362,7 +362,7 @@ yen.fn.html = function(markup) {
 }
 
 yen.fn.attr = function(p, v) {
-  if (typeof v == 'undefined') {
+  if (typeof v == 'undefined' && this.length > 0) {
     return this[0].getAttribute(p)
   }
   else {
@@ -373,10 +373,21 @@ yen.fn.attr = function(p, v) {
 }
 
 yen.fn.hasAttr = function(p) {
-  var el = this[0]
+  if (this.length > 0) {
+    var el = this[0]
 
-  return el.hasAttribute ? el.hasAttribute(p) :
-    el.getAttribute(p) !== null
+    // el.getAttribute(p) Does not work well on legacy IE
+    // If the passed p is some special property like `id',
+    // the return value will be string no matter the id attribute
+    // does present in the HTML or not.
+    //
+    // References:
+    // - http://gitlab.alibaba-inc.com/central/yen/issues/5
+
+    return el.hasAttribute ?
+      el.hasAttribute(p) :
+      el.getAttribute(p) !== null
+  }
 }
 
 yen.fn.removeAttr = function(p) {
@@ -399,7 +410,7 @@ yen.fn.val = function(value) {
  * Whether or not to use Element@dataset?
  */
 yen.fn.data = function(attr, value) {
-  if (typeof value === 'undefined') {
+  if (typeof value === 'undefined' && this.length > 0) {
     return _.cast(this[0].getAttribute('data-' + attr))
   }
   else {
@@ -444,6 +455,9 @@ yen.fn.children = function() {
     }
 
     return new YSet(children)
+  }
+  else {
+    return new YSet()
   }
 }
 
@@ -528,7 +542,7 @@ yen.fn.hide = function() {
 })
 
 yen.fn.css = function(p, v) {
-  if (typeof v == 'undefined' && typeof p == 'string') {
+  if (typeof v == 'undefined' && typeof p == 'string' && this.length > 0) {
     return _getStyle(this[0], p)
   }
 
