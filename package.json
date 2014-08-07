@@ -20,6 +20,7 @@
     "totoro": "^1.0.2"
   },
   "scripts": {
-    "test": "totoro"
+    "start": "node test/server",
+    "test": "node test/server & totoro --runner=http://`ifconfig en0 inet | grep -oE --max-count=1 '\\d+.\\d+.\\d+.\\d+' | head -1`:3000/runner.html"
   }
 }

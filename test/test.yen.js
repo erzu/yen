@@ -87,6 +87,11 @@ describe('yen', function() {
       expect(el.attr('data-foo', 'egg').attr('data-foo')).to.equal('egg')
     })
 
+    it('.hasAttr', function() {
+      var el = $('.fixture-attr')
+      expect(el.hasAttr('data-foo')).to.be(true)
+    })
+
     it('.html', function() {
       var el = $('.fixture-html')
       expect(el.html()).to.equal('Hello yen')
@@ -144,8 +149,8 @@ describe('yen', function() {
           <li class="entry entry-current">
             <a class="a" id="a"></a>
           </li>
-          <li class="entry"></li>
-          <li empty_attr class="entry entry-last">
+          <li class="entry" attr></li>
+          <li empty_attr attr=value class="entry entry-last">
             <a id="e" class="b f" c="d" g></a>
           </li>
         </ul>
@@ -173,6 +178,8 @@ describe('yen', function() {
       expect($('body #ul .entry-current #a').length).to.be(1)
       expect($('html #ul [class="entry"]').length).to.be(3)
       expect($('html #ul [empty_attr]').length).to.be(1)
+      expect($('html #ul [attr]').length).to.be(2)
+      expect($('html #ul [attr=""]').length).to.be(1)
     })
 
     it('can combine selector', function() {

@@ -5,11 +5,10 @@ var connect = require('connect')
 var http = require('http')
 var path = require('path')
 
+var PORT = 3000
+
 
 var app = connect()
-
-var morgan = require('morgan')
-app.use(morgan('combined'))
 
 var serveStatic = require('serve-static')
 app.use(serveStatic(__dirname))
@@ -21,4 +20,6 @@ app.use(helmsmen({
 }))
 
 
-http.createServer(app).listen(3000)
+http.createServer(app).listen(PORT, function() {
+  console.log('Server started at', PORT)
+})

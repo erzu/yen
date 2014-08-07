@@ -7,6 +7,16 @@ var doc = win.document
 
 
 /*
+ * IE[6-8] does not have global Node interface, let's just pretend
+ * there is one.
+ */
+/* global -Node */
+var Node = win.Node || {
+  ELEMENT_NODE: 1
+}
+
+
+/*
  * Glue methods for compatiblity
  */
 
@@ -136,16 +146,17 @@ function _matches(el, selector) {
     return _hasClass(el, selector.slice(1))
   }
   else if (fchar == '[') {
-    var matchResult = selector.match(/^\[(.+?)(?:=(["']?)(.*?)\2)?]$/i)
+    var matchResult = selector.match(/^\[(.+?)(=(["']?)(.*?)\3)?]$/i)
     var attrName = matchResult[1]
-    var attrValue = matchResult[3]
+    var hasAttrValue = !!matchResult[2]
+    var attrValue = hasAttrValue ? matchResult[4] : undefined
 
     if (!attrName) {
       throw new Error('Invalid attribute selector: ' + selector)
     }
 
     var value = attrName === 'class' ? el.className : el.getAttribute(attrName)
-    return attrValue === undefined ? value != null : value === attrValue
+    return attrValue === undefined ? value !== null : value === attrValue
   }
   else if (fchar == ':') {
     var pseudoClass = selector.slice(1)
