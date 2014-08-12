@@ -5,7 +5,7 @@ var connect = require('connect')
 var http = require('http')
 var path = require('path')
 
-var PORT = 3000
+var PORT = 4000
 
 
 var app = connect()
