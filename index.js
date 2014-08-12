@@ -15,6 +15,8 @@ var Node = win.Node || {
   ELEMENT_NODE: 1
 }
 
+var toString = Object.prototype.toString
+
 
 /*
  * Glue methods for compatiblity
@@ -62,7 +64,7 @@ function _querySelectorAll(selector, context) {
 function _findMatchingElements(selector, context, firstMatch) {
   var el
 
-  if(/^#[a-z]+$/i.test(selector)){  // 优化单独的ID选择器
+  if (/^#[a-z]+$/i.test(selector)){  // 优化单独的ID选择器
     el = doc.getElementById(selector.slice(1))
     return firstMatch ? el : [el]
   }
@@ -70,10 +72,10 @@ function _findMatchingElements(selector, context, firstMatch) {
   var descendants = context.getElementsByTagName('*')
   var selectedElements = []
 
-  for(var i = 0, length = descendants.length; i < length; i++ ){
+  for (var i = 0, length = descendants.length; i < length; i++) {
     el = descendants[i]
-    if(_matchesCommaSelectorList(el, selector, context)){
-      if(firstMatch){
+    if (_matchesCommaSelectorList(el, selector, context)) {
+      if (firstMatch) {
         return el
       }
       selectedElements.push(el)
@@ -86,7 +88,7 @@ function _findMatchingElements(selector, context, firstMatch) {
 function _matchesCommaSelectorList(el, selector, context) {
   var selectorList = selector.split(',')
   return selectorList.some(function(selector){
-    if(_matchesDescendantSelectorList(el, selector, context)){
+    if (_matchesDescendantSelectorList(el, selector, context)) {
       return true
     }
   })
@@ -96,14 +98,15 @@ function _matchesDescendantSelectorList(el, selector, context) {
   var childSelectorMatchesElement
   var selectorList = selector.replace(/>/g,' $& ').trim().split(/\s+/).reverse()
   return selectorList.every(function(selector, index){
-    if(index === 0){
+    if (index === 0) {
       return _matchesSimpleSelectorList(el, selector) && _isAncestor(context, el)
-    }else{
-      if(selector === '>'){
+    }
+    else {
+      if (selector === '>') {
         childSelectorMatchesElement = el
         return true
       }
-      if(childSelectorMatchesElement){
+      if (childSelectorMatchesElement) {
         var parentNode = childSelectorMatchesElement.parentNode
         childSelectorMatchesElement = false
         el = el.parentNode
@@ -113,7 +116,7 @@ function _matchesDescendantSelectorList(el, selector, context) {
       while(el && !_matchesSimpleSelectorList(el, selector)){
         el = el.parentNode
       }
-      return !!el;
+      return !!el
     }
   })
 }
@@ -126,7 +129,7 @@ function _matchesSimpleSelectorList(el, selector) {
   // Maybe I should consider taking eslint a closer look.
   while ((matchResult = simpleSelectorListRegex.exec(selector))) {
     var simpleSelector = matchResult[0]
-    if(!_matches(el, simpleSelector)){
+    if (!_matches(el, simpleSelector)) {
       return false
     }
   }
@@ -252,7 +255,7 @@ function YSet(selector, context) {
   if (!selector) {
     // nothing to do
   }
-  else if (typeof selector == 'object' && selector.nodeName) {
+  else if (selector.nodeType === Node.ELEMENT_NODE) {
     nodes = [selector]
   }
   else if (typeof selector != 'string') {

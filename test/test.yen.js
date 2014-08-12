@@ -252,11 +252,20 @@ describe('yen', function() {
 
   describe('utilities', function() {
     it('.each', function() {
-
     })
 
     it('.map', function() {
+    })
+  })
 
+  describe('miscellaneous', function() {
+    it('can select <object> in firefox', function() {
+      $('#fixture').html(heredoc(function() {/*
+        <object></object>
+      */}))
+
+      expect($('object').length).to.be(1)
+      expect($(document.getElementsByTagName('object')[0]).length).to.be(1)
     })
   })
 })
