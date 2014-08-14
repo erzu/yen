@@ -1,4 +1,4 @@
-var $ = require('../yen')
+var $ = require('@ali/yen')
 var heredoc = require('heredoc')
 var _ = require('@ali/belt')
 
