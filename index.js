@@ -12,7 +12,8 @@ var doc = win.document
  */
 /* global -Node */
 var Node = win.Node || {
-  ELEMENT_NODE: 1
+  ELEMENT_NODE: 1,
+  DOCUMENT_NODE: 9
 }
 
 var toString = Object.prototype.toString
@@ -255,7 +256,8 @@ function YSet(selector, context) {
   if (!selector) {
     // nothing to do
   }
-  else if (selector.nodeType === Node.ELEMENT_NODE) {
+  else if (selector.nodeType == Node.ELEMENT_NODE ||
+           selector.nodeType == Node.DOCUMENT_NODE) {
     nodes = [selector]
   }
   else if (typeof selector != 'string') {

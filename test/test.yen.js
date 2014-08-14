@@ -267,5 +267,9 @@ describe('yen', function() {
       expect($('object').length).to.be(1)
       expect($(document.getElementsByTagName('object')[0]).length).to.be(1)
     })
+
+    it('can select document', function() {
+      expect($(document).length).to.be(1)
+    })
   })
 })
