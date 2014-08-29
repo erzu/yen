@@ -61,6 +61,7 @@ function _isEventSupported(eventName) {
 
 /*
  * Fix the event object in IE6-8
+ * or when triggering events by code
  */
 function _fixEvent(event) {
   function returnTrue() { return true }
@@ -255,6 +256,7 @@ Events.on = function(elem, type, fn) {
       if (data.disabled) return
       event = (!elem.addEventListener && !elem.attachEvent) ?
               event : _fixEvent(event)
+      event.currentTarget = elem
 
       var handlers = data.handlers[event.type]
       if (handlers) {
