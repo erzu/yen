@@ -207,6 +207,21 @@ function _withinElement(elem, event, type, handle) {
   }
 }
 
+function _setDataTreeDisabled(elem, status) {
+  var data = _getData(elem)
+  var parent = elem.parentNode || elem.ownerDocument
+
+  data.disabled = status
+
+  while (parent) {
+    data = _getData(parent)
+    if (typeof data.disabled !== 'undefined') {
+      data.disabled = status
+    }
+    parent = parent.parentNode || parent.ownerDocument
+  }
+}
+
 Events.on = function(elem, type, fn) {
   // older versions of modern browsers doesn't support
   // mouseenter/mouseleave, simulate using mouseover/mouseout
@@ -321,11 +336,29 @@ Events.trigger = function(elem, event) {
     Events.trigger(parent, event)
   }
   else if (!parent && !event.isDefaultPrevented()) {
-    var targetData = _getData(event.target)
+
+    // trigger the default browser action if has one
     if (event.target[event.type]) {
-      targetData.disabled = true
+
+      /*
+       * elemData.dispatcher has already been called before,
+       * we need to disable all the elemData.dispatcher
+       * when triggering the default browser action.
+       * If not, the default browser action may cause
+       * the event propagation, causing elemData.dispatcher
+       * on the same element been called more than one time.
+       * For example, consider the following DOM structure
+       * <div id="outer"><p id="inner"></p></div>
+       * You add click listener for both the <div> and the <p>,
+       * and you trigger the click event on <p>.
+       * If _setDataTreeDisabled(event.target, true) is not called,
+       * when invoking event.target[event.type](),
+       * the click event listener on the <div> will be called
+       * one more time.
+       */
+      _setDataTreeDisabled(event.target, true)
       event.target[event.type]()
-      targetData.disabled = false
+      _setDataTreeDisabled(event.target, false)
     }
   }
 }
