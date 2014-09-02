@@ -100,6 +100,20 @@ describe('yen/events', function() {
       Events.trigger(test, 'custom')
       expect(count).to.be(5)
     })
+
+    it('can respond to target and currentTarget', function() {
+      function Test() {}
+      var test = new Test()
+      var pass = false
+
+      function handler(e) {
+        pass = this === e.target && e.target === e.currentTarget
+      }
+
+      Events.on(test, 'custom', handler)
+      Events.trigger(test, 'custom')
+      expect(pass).to.be(true)
+    })
   })
 
   describe('events for yen wrapped objects', function() {
@@ -160,6 +174,26 @@ describe('yen/events', function() {
 
       last.trigger('custom')
       expect(last[0].style.color).to.be('yellow')
+    })
+
+    it('can respond to currentTarget', function() {
+      var current = $('.entry-current')
+      var ul = current.parent()
+      var i = 0
+
+      current.on('click', function(e) {
+        expect($(e.currentTarget).hasClass('entry-current')).to.be(true)
+      })
+      ul.on('click', function(e) {
+        if (i === 0) expect($(e.target).hasClass('entry-current')).to.be(true)
+        else if (i === 1) expect(e.target === e.currentTarget).to.be(true)
+        expect(e.currentTarget.nodeName.toLowerCase()).to.be('ul')
+      })
+
+      current.trigger('click')
+
+      i++
+      ul.trigger('click')
     })
   })
 })
