@@ -179,15 +179,20 @@ describe('yen/events', function() {
     it('can respond to currentTarget', function() {
       var current = $('.entry-current')
       var ul = current.parent()
+      var i = 0
 
       current.on('click', function(e) {
         expect($(e.currentTarget).hasClass('entry-current')).to.be(true)
       })
       ul.on('click', function(e) {
+        if (i === 0) expect($(e.target).hasClass('entry-current')).to.be(true)
+        else if (i === 1) expect(e.target === e.currentTarget).to.be(true)
         expect(e.currentTarget.nodeName.toLowerCase()).to.be('ul')
       })
 
       current.trigger('click')
+
+      i++
       ul.trigger('click')
     })
   })
