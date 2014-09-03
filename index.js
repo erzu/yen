@@ -247,6 +247,9 @@ function _regulate(value, prop) {
 
 /*
  * Array-like object constructor
+ *
+ * References:
+ * - https://github.com/jquery/jquery/blob/15a609f7663c4348ab7f1acbc9e566ec20bb717c/src/core/init.js
  */
 
 function YSet(selector, context) {
