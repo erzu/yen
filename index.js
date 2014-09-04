@@ -271,7 +271,7 @@ function YSet(selector, context) {
     }
   }
   else if (selector) {
-    nodes = selector.length ? selector : [selector]
+    nodes = 'length' in selector ? selector : [selector]
   }
 
   var len = nodes.length
