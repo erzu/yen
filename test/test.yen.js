@@ -252,9 +252,14 @@ describe('yen', function() {
 
   describe('utilities', function() {
     it('.each', function() {
+      $([0, 1, 2, 3]).each(function(item, i) {
+        expect(item).to.equal(i)
+      })
     })
 
     it('.map', function() {
+      expect($([0, 1, 2, 3]).map(function(item) { return item + 1 }))
+        .to.eql([1, 2, 3, 4])
     })
   })
 
@@ -270,6 +275,10 @@ describe('yen', function() {
 
     it('can select document', function() {
       expect($(document).length).to.be(1)
+    })
+
+    it('can construct []', function() {
+      expect($([]).length).to.be(0)
     })
   })
 })
