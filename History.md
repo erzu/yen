@@ -3,6 +3,7 @@
 
  * Add e.currentTarget
  * Use @ali/helmsmen-kit as the test server
+ * Support $(window), $({})
 
 
 0.1.3 / 2014-08-14
