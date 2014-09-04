@@ -1,3 +1,10 @@
+0.2.0 / 2014-09-02
+==================
+
+ * Add e.currentTarget
+ * Use @ali/helmsmen-kit as the test server
+
+
 0.1.3 / 2014-08-14
 ==================
 
