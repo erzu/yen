@@ -247,6 +247,9 @@ function _regulate(value, prop) {
 
 /*
  * Array-like object constructor
+ *
+ * References:
+ * - https://github.com/jquery/jquery/blob/15a609f7663c4348ab7f1acbc9e566ec20bb717c/src/core/init.js
  */
 
 function YSet(selector, context) {
@@ -256,20 +259,19 @@ function YSet(selector, context) {
   if (!selector) {
     // nothing to do
   }
-  else if (selector.nodeType == Node.ELEMENT_NODE ||
-           selector.nodeType == Node.DOCUMENT_NODE) {
+  else if (selector.nodeType) {
     nodes = [selector]
   }
-  else if (typeof selector != 'string') {
-    nodes = selector
-  }
-  else if (selector) {
+  else if (typeof selector == 'string') {
     if (doc.querySelectorAll) {
       nodes = context.querySelectorAll(selector)
     }
     else {
       nodes = _querySelectorAll(selector, context)
     }
+  }
+  else if (selector) {
+    nodes = selector.length ? selector : [selector]
   }
 
   var len = nodes.length
