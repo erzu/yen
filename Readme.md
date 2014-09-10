@@ -47,6 +47,19 @@ TODO
 
 在 Firefox 与 Safari 5 里执行 `.css('margin')` 并不会返回缩写的 margin 值，而是返回空。
 
+### .position()
+
+[jQuery.fn.position()](jQuery#position) 返回的 `top` 与 `left` 会去掉节点的 marginTop 和 marginLeft，而 Element#offsetLeft 和 Element#offsetTop 是会把节点的 margin 考虑进去的。不清楚这个区别的前因后果，但我一直以为是等价的，所以 yen#position 的返回值采用的后者，即：
+
+```js
+return {
+  top: el.offsetTop,
+  left: el.offsetLeft
+}
+```
+
+不过，这个返回值[在 IE[67] 里是有问题的][cssom#offsetLeft]，会无视 `position: relative` 的父节点。
+
 ## Tests - 测试
 
 我们使用 connect 配合 serve-static、morgan、helmsmen 等中间件运行 HTTP 服务，默认端口 3000
@@ -75,3 +88,5 @@ $ totoro --runner http://`ifconfig en0 inet | grep -oE --max-count=1 '\\d+.\\d+.
 $ tnpm start
 $ tnpm test
 ```
+
+[jQuery#position]: http://api.jquery.com/position/
