@@ -13,14 +13,14 @@
     "registry": "http://registry.npm.alibaba-inc.com"
   },
   "devDependencies": {
-    "@ali/helmsmen-kit": "~0.2.0",
+    "@ali/golem-kit": "~1.0.0",
     "expect.js": "~0.3.1",
     "heredoc": "~1.2.0",
     "mocha": "~1.20.1",
     "totoro": "~1.0.2"
   },
   "scripts": {
-    "start": "helmsmen serve --port 4000 --local",
-    "test": "totoro --runner=http://`ifconfig en0 inet | grep -oE --max-count=1 '\\d+.\\d+.\\d+.\\d+' | head -1`:4000/test/runner.html"
+    "start": "golem serve",
+    "test": "totoro --runner=http://`golem ip`:5000/test/runner.html"
   }
 }

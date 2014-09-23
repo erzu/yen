@@ -6,7 +6,7 @@
 
 ### 浏览器
 
-我们推荐使用 [helmsmen](http://gitlab.alibaba-inc.com/central/helmsmen) 管理前端组件。
+我们推荐使用 [golem][golem] 管理前端组件。
 
 ### Node.js
 
@@ -14,8 +14,8 @@ yen 仅适合在浏览器中选择、操作 DOM。
 
 如果你需要在 Node.js 中用 DOM 或者 jQuery API 操作 HTML 字符串，可以考虑使用这两个模块：
 
-1. 模仿 jQuery API 的 [cheerio](https://github.com/cheeriojs/cheerio)
-2. 模仿 DOM 原生 API，提供 querySelector 等方法的 [@ali/markup](http://gitlab.alibaba-inc.com/central/markup)
+1. 模仿 jQuery API 的 [cheerio][cheerio]
+2. 模仿 DOM 原生 API，提供 querySelector 等方法的 [@ali/markup][markup]
 
 ## API
 
@@ -49,7 +49,7 @@ TODO
 
 ### .position()
 
-[jQuery.fn.position()](jQuery#position) 返回的 `top` 与 `left` 会去掉节点的 marginTop 和 marginLeft，而 Element#offsetLeft 和 Element#offsetTop 是会把节点的 margin 考虑进去的。不清楚这个区别的前因后果，但我一直以为是等价的，所以 yen#position 的返回值采用的后者，即：
+[jQuery.fn.position()][jQuery#position] 返回的 `top` 与 `left` 会去掉节点的 marginTop 和 marginLeft，而 Element#offsetLeft 和 Element#offsetTop 是会把节点的 margin 考虑进去的。不清楚这个区别的前因后果，但我一直以为是等价的，所以 yen#position 的返回值采用的后者，即：
 
 ```js
 return {
@@ -62,11 +62,11 @@ return {
 
 ## Tests - 测试
 
-我们使用 connect 配合 serve-static、morgan、helmsmen 等中间件运行 HTTP 服务，默认端口 3000
+~~我们使用 connect 配合 serve-static、morgan、helmsmen 等中间件运行 HTTP 服务，默认端口 3000~~ 我们使用 [golem-kit][golem-kit] 运行 HTTP 服务，默认端口 5000。
 
 ```bash
 $ tnpm start
-$ open http://localhost:3000/test/runner.html
+$ open http://localhost:5000/test/runner.html
 ```
 
 ### mocha & expect.js
@@ -78,8 +78,8 @@ $ open http://localhost:3000/test/runner.html
 我们使用 totoro 运行多个浏览器的集成测试：
 
 ```bash
-$ node test/server.js
-$ totoro --runner http://`ifconfig en0 inet | grep -oE --max-count=1 '\\d+.\\d+.\\d+.\\d+' | head -1`/test/runner.html
+$ tnpm start
+$ totoro --runner http://`golem ip`/test/runner.html
 ```
 
 也可以直接执行：
@@ -89,4 +89,9 @@ $ tnpm start
 $ tnpm test
 ```
 
+
+[cheerio]: https://github.com/cheeriojs/cheerio
+[golem]: http://gitlab.alibaba-inc.com/central/golem/tree/master
+[golem-kit]: http://gitlab.alibaba-inc.com/central/golem-kit/tree/master
+[markup]: http://gitlab.alibaba-inc.com/central/markup/tree/master
 [jQuery#position]: http://api.jquery.com/position/
