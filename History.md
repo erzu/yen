@@ -1,3 +1,9 @@
+0.3.1 / 2014-12-04
+==================
+
+ * If getElementById returned null, do not construct [null]
+
+
 0.3.0 / 2014-12-04
 ==================
 
