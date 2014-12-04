@@ -66,14 +66,17 @@ function _querySelectorAll(selector, context) {
 
 function _findMatchingElements(selector, context, firstMatch) {
   var el
+  var selectedElements = []
 
   if (/^#[a-z]+$/i.test(selector)){  // 优化单独的ID选择器
     el = doc.getElementById(selector.slice(1))
+    if (!el) {
+      return selectedElements
+    }
     return firstMatch ? el : [el]
   }
 
   var descendants = context.getElementsByTagName('*')
-  var selectedElements = []
 
   for (var i = 0, length = descendants.length; i < length; i++) {
     el = descendants[i]
