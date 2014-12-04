@@ -1,8 +1,12 @@
+'use strict';
 
 var _ = require('@ali/belt')
 
 
-var win = this
+/*
+ * Cannot rename `this` in strict mode. So let's just use window object directly.
+ */
+var win = window
 var doc = win.document
 
 
@@ -15,8 +19,6 @@ var Node = win.Node || {
   ELEMENT_NODE: 1,
   DOCUMENT_NODE: 9
 }
-
-var toString = Object.prototype.toString
 
 
 /*
@@ -653,5 +655,30 @@ yen.fn.offset = function() {
   }
 }
 
+var Events = require('./events')
+
+
+/*
+ * Event System for yen
+ */
+yen.fn.on = function(type, fn) {
+  return this.each(function(elem) {
+    Events.on(elem, type, fn)
+  })
+}
+
+yen.fn.off = function(type, fn) {
+  return this.each(function(elem) {
+    Events.off(elem, type, fn)
+  })
+}
+
+yen.fn.trigger = function(e) {
+  return this.each(function(elem) {
+    Events.trigger(elem, e)
+  })
+}
+
+yen.Events = Events
 
 module.exports = yen

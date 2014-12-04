@@ -1,6 +1,7 @@
+'use strict';
 
 var $ = require('@ali/yen')
-var Events = require('@ali/yen/events')
+var Events = $.Events
 var heredoc = require('heredoc').strip
 
 

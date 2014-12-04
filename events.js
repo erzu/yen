@@ -1,4 +1,4 @@
-var yen = require('@ali/yen')
+'use strict';
 
 /*
  * _getData and _removeData
@@ -365,25 +365,5 @@ Events.trigger = function(elem, event) {
   }
 }
 
-/*
- * Event System for yen
- */
-yen.fn.on = function(type, fn) {
-  return this.each(function(elem) {
-    Events.on(elem, type, fn)
-  })
-}
-
-yen.fn.off = function(type, fn) {
-  return this.each(function(elem) {
-    Events.off(elem, type, fn)
-  })
-}
-
-yen.fn.trigger = function(e) {
-  return this.each(function(elem) {
-    Events.trigger(elem, e)
-  })
-}
 
 module.exports = Events
