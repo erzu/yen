@@ -1,5 +1,6 @@
 {
   "asi": true,
+  "unused": "vars",
 
   "globals": {
     "require": false,
