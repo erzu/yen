@@ -256,7 +256,10 @@ Events.on = function(elem, type, fn) {
       if (data.disabled) return
       event = (!elem.addEventListener && !elem.attachEvent) ?
               event : _fixEvent(event)
-      event.currentTarget = elem
+      try {
+        event.currentTarget = elem
+      }
+      catch(e) {}
 
       var handlers = data.handlers[event.type]
       if (handlers) {
