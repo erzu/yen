@@ -230,17 +230,17 @@ describe('yen', function() {
     })
 
     it('.parent', function() {
-      // var el = $('#fixture .bar')
-      // expect(el.parent()[0].tagName.toLowerCase()).to.be('ol')
-      // expect(el.parent('#fixture').length).to.be(1)
-      // expect(el.parent('#fixture').attr('id')).to.be('fixture')
+      var el = $('#fixture .bar')
+      expect(el.parent()[0].tagName.toLowerCase()).to.be('ol')
+      expect(el.parent('#fixture').length).to.be(1)
+      expect(el.parent('#fixture').attr('id')).to.be('fixture')
 
-      // // find all parents of elements within matched set.
-      // expect($('#fixture li').parent().length).to.be(2)
+      // find all parents of elements within matched set.
+      expect($('#fixture li').parent().length).to.be(2)
       expect($('#fixture li').parent('ol:first-child').length).to.be(1)
 
       // return empty set if there's no parentNode.
-      // expect($(document).parent()).to.be.a($)
+      expect($(document).parent()).to.be.a($)
     })
 
     it('.first', function() {
