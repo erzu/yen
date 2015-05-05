@@ -707,8 +707,10 @@ yen.fn.offset = function() {
  *
  * References:
  * - http://www.elijahmanor.com/jquery-object-quacks-like-an-array-duck/
+ * - http://stackoverflow.com/questions/6599071/array-like-objects-in-javascript
  */
 yen.fn.splice = Array.prototype.splice
+yen.fn.length = 0
 
 
 var Events = require('./events')
