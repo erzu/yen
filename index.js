@@ -11,8 +11,7 @@ var doc = win.document
 
 
 /*
- * IE[6-8] does not have global Node interface, let's just pretend
- * there is one.
+ * IE[6-8] does not have global Node interface, let's just pretend there is one.
  */
 /* global -Node */
 var Node = win.Node || {
@@ -84,7 +83,9 @@ function _findMatchingElements(selector, context, firstMatch) {
       if (firstMatch) {
         return el
       }
-      selectedElements.push(el)
+      else if (selectedElements.indexOf(el) < 0) {
+        selectedElements.push(el)
+      }
     }
   }
 
@@ -92,6 +93,8 @@ function _findMatchingElements(selector, context, firstMatch) {
 }
 
 function _matchesCommaSelectorList(el, selector, context) {
+  if (el.matches) return el.matches(selector)
+
   var selectorList = selector.split(',')
   return selectorList.some(function(selector){
     if (_matchesDescendantSelectorList(el, selector, context)) {
@@ -145,10 +148,6 @@ function _matchesSimpleSelectorList(el, selector) {
 function _matches(el, selector) {
   if (!el) return false
 
-  if (el.matches) {
-    return el.matches(selector)
-  }
-
   var fchar = selector.charAt(0)
 
   if (fchar == '#') {
@@ -175,20 +174,14 @@ function _matches(el, selector) {
 
     switch(pseudoClass){
       case  'first-child' :
-        return el.parentNode.firstElementChild || _getFirstElementChild(el.parentNode) === el
+        return (el.parentNode.firstElementChild || _getFirstElementChild(el.parentNode)) === el
+      case 'last-child':
+        return (el.parentNode.lastElementChild || _getLastElementChild(el.parentNode)) === el
     }
   }
   else {
     return el.tagName === selector.toUpperCase()
   }
-}
-
-function is(node, type) {
-  return !!node && node.nodeType == type
-}
-
-function match(node, tag) {
-  return node.tagName.toLowerCase() === tag
 }
 
 function _isAncestor(ancestor, descendant) {
@@ -201,13 +194,28 @@ function _isAncestor(ancestor, descendant) {
 }
 
 function _getFirstElementChild(node) {
-  var children = node.childNodes
-  for (var i = 0, len = children.length; i < len; i++) {
-      var child = children[i]
-      if (child.nodeType === Node.ELEMENT_NODE) {
-          return child
-      }
+  var el = node.firstChild
+
+  while (el) {
+    if (el.nodeType === Node.ELEMENT_NODE) {
+      return el
+    }
+    el = el.nextSibling
   }
+
+  return null
+}
+
+function _getLastElementChild(node) {
+  var el = node.lastChild
+
+  while (el) {
+    if (el.nodeType === Node.ELEMENT_NODE) {
+      return el
+    }
+    el = el.previousSibling
+  }
+
   return null
 }
 
@@ -249,6 +257,17 @@ function _regulate(value, prop) {
   return value
 }
 
+function _uniq(arr) {
+  var result = []
+
+  for (var i = 0, len = arr.length; i < len; i++) {
+    var el = arr[i]
+    if (result.indexOf(el) < 0) result.push(el)
+  }
+
+  return result
+}
+
 
 /*
  * Array-like object constructor
@@ -257,7 +276,13 @@ function _regulate(value, prop) {
  * - https://github.com/jquery/jquery/blob/15a609f7663c4348ab7f1acbc9e566ec20bb717c/src/core/init.js
  */
 
+var RE_HTML = /^<(\w+)\s*\/?>(?:<\/\1>|)$/
+
 function YSet(selector, context) {
+  if (!(this instanceof YSet)) {
+    return new YSet(selector, context)
+  }
+
   context = context || doc
   var nodes = []
 
@@ -268,7 +293,12 @@ function YSet(selector, context) {
     nodes = [selector]
   }
   else if (typeof selector == 'string') {
-    if (doc.querySelectorAll) {
+    var m = selector.match(RE_HTML)
+
+    if (m) {
+      nodes = [document.createElement(m[1])]
+    }
+    else if (context.querySelectorAll) {
       nodes = context.querySelectorAll(selector)
     }
     else {
@@ -276,7 +306,7 @@ function YSet(selector, context) {
     }
   }
   else if (selector) {
-    nodes = 'length' in selector ? selector : [selector]
+    nodes = 'length' in selector ? _uniq(selector) : [selector]
   }
 
   var len = nodes.length
@@ -284,56 +314,80 @@ function YSet(selector, context) {
   for (var i = 0; i < len; i++) {
     this[i] = nodes[i]
   }
+
+  this.context = context
   this.length = len
 }
 
-function yen(selector, context) {
-  return new YSet(selector, context)
-}
-
+var yen = YSet
 yen.fn = YSet.prototype
 
 yen.fn.find = function(selector) {
-  if (this.length > 0)
-    return new YSet(selector, this[0])
-  else
-    return new YSet()
+  var candidates = []
+
+  for (var i = 0, len = this.length; i < len; i++) {
+    candidates = candidates.concat(_querySelectorAll(selector, this[i]))
+  }
+
+  return new YSet(candidates)
 }
 
-yen.fn.next = function(tag) {
+yen.fn.next = function(selector) {
   var node = this[0]
+  var candidate
 
-  while ((node = node.nextSibling)) {
-    if (is(node, 1)) {
-      if (!tag || match(node, tag)) {
-        break
-      }
+  while (node && (node = node.nextSibling)) {
+    if (node.nodeType == Node.ELEMENT_NODE &&
+        (!selector || _matchesCommaSelectorList(node, selector, this.context))) {
+      candidate = node
+      break
     }
   }
 
-  return new YSet(node)
+  return new YSet(candidate)
 }
 
-yen.fn.each = function(fn) {
-  for (var i = 0, len = this.length; i < len; i++) {
-    // Should we be compatible with jQuery#each, or Array#forEach in ECMAScript 5?
-    // - http://api.jquery.com/each/
-    // - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
-    fn(this[i], i)
+yen.fn.prev = function(selector) {
+  var node = this[0]
+  var candidate
+
+  while (node && (node = node.previousSibling)) {
+    if (node.nodeType == Node.ELEMENT_NODE &&
+        (!selector || _matchesCommaSelectorList(node, selector, this.context))) {
+      candidate = node
+      break
+    }
   }
 
+  return new YSet(candidate)
+}
+
+yen.fn.is = function(selector) {
+  for (var i = 0, len = this.length; i < len; i++) {
+    if (typeof selector == 'string') {
+      if (_matchesCommaSelectorList(this[i], selector, this.context)) return true
+    } else {
+      if (this[i] == selector) return true
+    }
+  }
+
+  return false
+}
+
+/*
+ * Incompatible with jQuery.fn.each on purpose.
+ *
+ * References:
+ * - http://api.jquery.com/each/
+ * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
+ */
+yen.fn.each = function(fn) {
+  this.forEach(fn)
   return this
 }
+yen.fn.forEach = Array.prototype.forEach
+yen.fn.map = Array.prototype.map
 
-yen.fn.map = function(fn) {
-  var res = []
-
-  for (var i = 0, len = this.length; i < len; i++) {
-    res[i] = fn(this[i], i)
-  }
-
-  return res
-}
 
 yen.fn.hasClass = function(cls) {
   return _hasClass(this[0], cls)
@@ -440,56 +494,43 @@ yen.fn.last = function() {
   return new YSet(this[this.length - 1])
 }
 
-yen.fn.next = function() {
-  var el = this[0]
-
-  do {
-    el = el.nextSibling
-  }
-  while (el && 1 !== el.nodeType)
-
-  return new YSet(el)
-}
-
 yen.fn.get = function(index) {
   return new YSet(this[index])
 }
 
-yen.fn.children = function() {
-  if (this.length > 0) {
-    var el = this[0]
-    var child = el.firstChild
-    var children = []
+yen.fn.children = function(selector) {
+  var candidates = []
 
-    while (child) {
-      if (1 == child.nodeType) children.push(child)
-      child = child.nextSibling
+  for (var i = 0, len = this.length; i < len; i++) {
+    var el = this[i].firstChild
+
+    while (el) {
+      if (Node.ELEMENT_NODE == el.nodeType &&
+          (!selector || _matchesCommaSelectorList(el, selector, this.context))) {
+        candidates.push(el)
+      }
+      el = el.nextSibling
     }
+  }
 
-    return new YSet(children)
-  }
-  else {
-    return new YSet()
-  }
+  return new YSet(candidates)
 }
 
 yen.fn.parent = function(selector) {
-  var el = this[0]
-  var parent = el.parentNode
+  var candidates = []
 
-  if (typeof selector != 'undefined') {
-    while (parent) {
-      if (_matches(parent, selector)) {
-        return new YSet(parent)
-      }
-      else {
-        parent = parent.parentNode
+  for (var i = 0, len = this.length; i < len; i++) {
+    var el = this[i]
+
+    while ((el = el.parentNode)) {
+      if (!selector || _matchesCommaSelectorList(el, selector, this.context)) {
+        candidates.push(el)
+        break
       }
     }
   }
-  else {
-    return parent && new YSet(parent)
-  }
+
+  return new YSet(candidates)
 }
 
 yen.fn.show = function() {
@@ -658,6 +699,18 @@ yen.fn.offset = function() {
   }
 }
 
+
+/*
+ * The customized object will behave like array in console if the object has got
+ * `.length` and `.splice`. We can borrow `.splice` from Array.prototype
+ * directly.
+ *
+ * References:
+ * - http://www.elijahmanor.com/jquery-object-quacks-like-an-array-duck/
+ */
+yen.fn.splice = Array.prototype.splice
+
+
 var Events = require('./events')
 
 
@@ -683,5 +736,6 @@ yen.fn.trigger = function(e) {
 }
 
 yen.Events = Events
+
 
 module.exports = yen

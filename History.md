@@ -1,3 +1,19 @@
+1.0.0 / 2015-05-05
+==================
+
+ * Add `.is()` and `.prev()`.
+ * Fix `.next()` error when instance is empty.
+ * Change `.find()` to be compliant with `jQuery.fn.find()`
+ * Change `.parent()` to be compliant with `jQuery.fn.parent()`
+ * Change `.children()` to be compliant with `jQuery.fn.children()`
+
+When current instance has got multiple elements, in jQuery methods like
+`.find(selector)` will try to query selector on all of them, then return a
+result with all matched candidates included.
+
+See test cases about `.find()`, `.parent()`, and `.children()` for detail.
+
+
 0.3.2 / 2015-01-27
 ==================
 
