@@ -126,7 +126,7 @@ describe('yen', function() {
 
       $(div).html('Test append-dom')
       el.append(div)
-      expect($(el.children()[0]).html()).to.equal('Test append-dom')
+      expect(el.children().html()).to.equal('Test append-dom')
     })
 
     it('.prepend [string]', function() {
@@ -217,17 +217,30 @@ describe('yen', function() {
           <li class="bar"></li>
           <li class="ham"></li>
         </ol>
+        <ol>
+          <li></li>
+          <li></li>
+        </ol>
       */}))
     })
 
     it('.children', function() {
-      expect($('#fixture').find('ol').children().length).to.be(3)
+      expect($('#fixture').find('ol:first-child').children().length).to.be(3)
+      expect($('#fixture').find('ol').children().length).to.be(5)
     })
 
     it('.parent', function() {
-      var el = $('.bar')
-      expect(el.parent()[0].tagName.toLowerCase()).to.be('ol')
-      expect(el.parent('#fixture').length).to.be(1)
+      // var el = $('#fixture .bar')
+      // expect(el.parent()[0].tagName.toLowerCase()).to.be('ol')
+      // expect(el.parent('#fixture').length).to.be(1)
+      // expect(el.parent('#fixture').attr('id')).to.be('fixture')
+
+      // // find all parents of elements within matched set.
+      // expect($('#fixture li').parent().length).to.be(2)
+      expect($('#fixture li').parent('ol:first-child').length).to.be(1)
+
+      // return empty set if there's no parentNode.
+      // expect($(document).parent()).to.be.a($)
     })
 
     it('.first', function() {
@@ -236,7 +249,7 @@ describe('yen', function() {
     })
 
     it('.last', function() {
-      var child = $('#fixture').find('ol').children().last()
+      var child = $('#fixture').find('ol:first-child').children().last()
       expect(child.hasClass('ham')).to.be(true)
     })
 
@@ -247,6 +260,20 @@ describe('yen', function() {
 
     it('.find', function() {
       expect($('#fixture ul').find('li').length).to.be(0)
+      expect($('#fixture ol').find('li').length).to.be(5)
+
+      // make sure there's no duplication in matched set
+      expect($('#fixture').find('.egg,li').length).to.be(5)
+    })
+
+    it('.next', function() {
+      expect($('#fixture .egg').next().length).to.be(0)
+      expect($('#fixture .foo').next().hasClass('bar')).to.be(true)
+    })
+
+    it('.prev', function() {
+      expect($('#fixture .foo').prev().length).to.be(0)
+      expect($('#fixture .bar').prev().hasClass('foo')).to.be(true)
     })
   })
 
@@ -261,6 +288,21 @@ describe('yen', function() {
     it('.map', function() {
       expect($([0, 1, 2, 3]).map(function(item) { return item + 1 }))
         .to.eql([1, 2, 3, 4])
+      expect($('script').map(function(el) { return el.tagName }).join(''))
+        .to.match(/^(?:script)+$/i)
+    })
+
+    it('.is', function() {
+      expect($(document).is(document)).to.be(true)
+      expect($('body').is('body,div')).to.be(true)
+      expect($('body').is(':last-child')).to.be(true)
+      expect($('body').is('div')).to.be(false)
+      expect($('script,div').is('div')).to.be(true)
+    })
+
+    it('can createElement', function() {
+      expect($('<div>').length).to.be(1)
+      expect($('<table>')[0].tagName.toLowerCase()).to.be('table')
     })
   })
 

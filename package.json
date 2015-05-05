@@ -1,7 +1,7 @@
 {
   "name": "@ali/yen",
   "description": "jQuery inspired DOM selection and manipulation library.",
-  "version": "0.3.2",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "git@gitlab.alibaba-inc.com:central/yen.git"
@@ -13,7 +13,7 @@
     "registry": "http://registry.npm.alibaba-inc.com"
   },
   "devDependencies": {
-    "@ali/golem-kit": "~1.0.0",
+    "@ali/golem-kit": "~2.0.2",
     "expect.js": "~0.3.1",
     "heredoc": "~1.2.0",
     "mocha": "~1.20.1",
