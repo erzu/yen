@@ -1,26 +1,20 @@
 {
-  "name": "@ali/yen",
+  "name": "yen",
   "description": "jQuery inspired DOM selection and manipulation library.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
-    "url": "git@gitlab.alibaba-inc.com:central/yen.git"
-  },
-  "dependencies": {
-    "@ali/belt": "~0.1.0"
-  },
-  "publishConfig": {
-    "registry": "http://registry.npm.alibaba-inc.com"
+    "url": "git@github.com:erzu/yen.git"
   },
   "devDependencies": {
-    "@ali/golem-kit": "~2.0.2",
+    "oceanifier": "~3.0.0",
     "expect.js": "~0.3.1",
     "heredoc": "~1.2.0",
     "mocha": "~1.20.1",
     "totoro": "~2.0.0"
   },
   "scripts": {
-    "start": "golem serve",
-    "test": "totoro --runner=http://`golem ip`:5000/test/runner.html"
+    "start": "oceanify serve",
+    "test": "totoro --runner=http://`oceanify ip`:5000/test/runner.html"
   }
 }
