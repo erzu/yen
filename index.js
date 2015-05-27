@@ -361,8 +361,8 @@ function YSet(selector, context) {
 }
 
 var yen = YSet
-yenFn = YSet.prototype
-var yenFn = yenFn
+yen.fn = YSet.prototype
+var yenFn = yen.fn
 
 yenFn.find = function(selector) {
   var candidates = []
