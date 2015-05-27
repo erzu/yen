@@ -1,13 +1,11 @@
 {
   "asi": true,
   "unused": "vars",
+  "browser": true,
 
   "globals": {
     "require": false,
     "exports": false,
-    "window": false,
-    "document": false,
-    "getComputedStyle": false,
     "module": false
   }
 }
