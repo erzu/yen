@@ -1,6 +1,7 @@
 {
   "asi": true,
   "unused": "vars",
+  "browser": true,
 
   "globals": {
     "require": false,

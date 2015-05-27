@@ -362,8 +362,9 @@ function YSet(selector, context) {
 
 var yen = YSet
 yen.fn = YSet.prototype
+var yenFn = yen.fn
 
-yen.fn.find = function(selector) {
+yenFn.find = function(selector) {
   var candidates = []
 
   for (var i = 0, len = this.length; i < len; i++) {
@@ -373,7 +374,7 @@ yen.fn.find = function(selector) {
   return new YSet(candidates)
 }
 
-yen.fn.next = function(selector) {
+yenFn.next = function(selector) {
   var node = this[0]
   var candidate
 
@@ -388,7 +389,7 @@ yen.fn.next = function(selector) {
   return new YSet(candidate)
 }
 
-yen.fn.prev = function(selector) {
+yenFn.prev = function(selector) {
   var node = this[0]
   var candidate
 
@@ -403,7 +404,7 @@ yen.fn.prev = function(selector) {
   return new YSet(candidate)
 }
 
-yen.fn.is = function(selector) {
+yenFn.is = function(selector) {
   for (var i = 0, len = this.length; i < len; i++) {
     if (typeof selector == 'string') {
       if (_matchesCommaSelectorList(this[i], selector, this.context)) return true
@@ -422,31 +423,31 @@ yen.fn.is = function(selector) {
  * - http://api.jquery.com/each/
  * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
  */
-yen.fn.each = function(fn) {
+yenFn.each = function(fn) {
   this.forEach(fn)
   return this
 }
-yen.fn.forEach = Array.prototype.forEach
-yen.fn.map = Array.prototype.map
+yenFn.forEach = Array.prototype.forEach
+yenFn.map = Array.prototype.map
 
 
-yen.fn.hasClass = function(cls) {
+yenFn.hasClass = function(cls) {
   return _hasClass(this[0], cls)
 }
 
-yen.fn.addClass = function(cls) {
+yenFn.addClass = function(cls) {
   return this.each(function(el) {
     _addClass(el, cls)
   })
 }
 
-yen.fn.removeClass = function(cls) {
+yenFn.removeClass = function(cls) {
   return this.each(function(el) {
     _removeClass(el, cls)
   })
 }
 
-yen.fn.toggleClass = function(cls) {
+yenFn.toggleClass = function(cls) {
   return this.each(function(el) {
     if (_hasClass(el, cls)) {
       _removeClass(el, cls)
@@ -457,7 +458,7 @@ yen.fn.toggleClass = function(cls) {
   })
 }
 
-yen.fn.html = function(markup) {
+yenFn.html = function(markup) {
   if (typeof markup == 'undefined') {
     return this[0].innerHTML
   }
@@ -468,7 +469,7 @@ yen.fn.html = function(markup) {
   }
 }
 
-yen.fn.attr = function(p, v) {
+yenFn.attr = function(p, v) {
   if (typeof v == 'undefined' && this.length > 0) {
     return this[0].getAttribute(p)
   }
@@ -479,7 +480,7 @@ yen.fn.attr = function(p, v) {
   }
 }
 
-yen.fn.hasAttr = function(p) {
+yenFn.hasAttr = function(p) {
   if (this.length > 0) {
     var el = this[0]
 
@@ -497,13 +498,13 @@ yen.fn.hasAttr = function(p) {
   }
 }
 
-yen.fn.removeAttr = function(p) {
+yenFn.removeAttr = function(p) {
   return this.each(function(el) {
     el.removeAttribute(p)
   })
 }
 
-yen.fn.val = function(value) {
+yenFn.val = function(value) {
   if (typeof value === 'undefined') {
     return this.length > 0 ? this[0].value : null
   }
@@ -516,7 +517,7 @@ yen.fn.val = function(value) {
 /*
  * Whether or not to use Element@dataset?
  */
-yen.fn.data = function(attr, value) {
+yenFn.data = function(attr, value) {
   if (typeof value === 'undefined' && this.length > 0) {
     return cast(this[0].getAttribute('data-' + attr))
   }
@@ -527,19 +528,19 @@ yen.fn.data = function(attr, value) {
   }
 }
 
-yen.fn.first = function() {
+yenFn.first = function() {
   return new YSet(this[0])
 }
 
-yen.fn.last = function() {
+yenFn.last = function() {
   return new YSet(this[this.length - 1])
 }
 
-yen.fn.get = function(index) {
+yenFn.get = function(index) {
   return new YSet(this[index])
 }
 
-yen.fn.children = function(selector) {
+yenFn.children = function(selector) {
   var candidates = []
 
   for (var i = 0, len = this.length; i < len; i++) {
@@ -557,7 +558,7 @@ yen.fn.children = function(selector) {
   return new YSet(candidates)
 }
 
-yen.fn.parent = function(selector) {
+yenFn.parent = function(selector) {
   var candidates = []
 
   for (var i = 0, len = this.length; i < len; i++) {
@@ -574,13 +575,13 @@ yen.fn.parent = function(selector) {
   return new YSet(candidates)
 }
 
-yen.fn.show = function() {
+yenFn.show = function() {
   return this.each(function(el) {
     el.style.display = ''
   })
 }
 
-yen.fn.hide = function() {
+yenFn.hide = function() {
   return this.each(function(el) {
     el.style.display = 'none'
   })
@@ -606,18 +607,18 @@ yen.fn.hide = function() {
     return isNaN(res) ? 0 : res
   }
 
-  yen.fn[dimension] = function() {
+  yenFn[dimension] = function() {
     return Math.max(this[0]['offset' + Dimension], toInteger(this.css(dimension)))
   }
 
-  yen.fn['inner' + Dimension] = function() {
+  yenFn['inner' + Dimension] = function() {
     var self = this
     return this[dimension]() + Pair.reduce(function(result, prop) {
         return result + toInteger(self.css('padding' + prop))
       }, 0)
   }
 
-  yen.fn['outer' + Dimension] = function(includeMargin) {
+  yenFn['outer' + Dimension] = function(includeMargin) {
     var self = this
     var result = this['inner' + Dimension]()
 
@@ -635,7 +636,7 @@ yen.fn.hide = function() {
   }
 })
 
-yen.fn.css = function(p, v) {
+yenFn.css = function(p, v) {
   if (typeof v == 'undefined' && typeof p == 'string' && this.length > 0) {
     return _getStyle(this[0], p)
   }
@@ -652,7 +653,7 @@ yen.fn.css = function(p, v) {
   })
 }
 
-yen.fn.prepend = function(content) {
+yenFn.prepend = function(content) {
   if (typeof content === 'string') {
     content = document.createTextNode(content)
   }
@@ -672,7 +673,7 @@ yen.fn.prepend = function(content) {
   })
 }
 
-yen.fn.append = function(content) {
+yenFn.append = function(content) {
   if (typeof content === 'string') {
     content = document.createTextNode(content)
   }
@@ -689,7 +690,7 @@ yen.fn.append = function(content) {
   })
 }
 
-yen.fn.appendTo = function(parent) {
+yenFn.appendTo = function(parent) {
   parent = new YSet(parent)
 
   return this.each(function(el) {
@@ -697,19 +698,19 @@ yen.fn.appendTo = function(parent) {
   })
 }
 
-yen.fn.clone = function() {
+yenFn.clone = function() {
   return new YSet(this.map(function(el) {
     return el.cloneNode(true)
   }))
 }
 
-yen.fn.remove = function() {
+yenFn.remove = function() {
   return this.each(function(el) {
     el.parentNode.removeChild(el)
   })
 }
 
-yen.fn.position = function() {
+yenFn.position = function() {
   if (this.length > 0) {
     var el = this[0]
 
@@ -720,7 +721,7 @@ yen.fn.position = function() {
   }
 }
 
-yen.fn.offset = function() {
+yenFn.offset = function() {
   if (this.length > 0) {
     var el = this[0]
     var box = { top: 0, left: 0 }
@@ -734,8 +735,8 @@ yen.fn.offset = function() {
       box = el.getBoundingClientRect()
 
     return {
-      top: box.top + window.pageYOffset - docElem.clientTop,
-      left: box.left + window.pageXOffset - docElem.clientLeft
+      top: box.top + win.pageYOffset - docElem.clientTop,
+      left: box.left + win.pageXOffset - docElem.clientLeft
     }
   }
 }
@@ -750,8 +751,8 @@ yen.fn.offset = function() {
  * - http://www.elijahmanor.com/jquery-object-quacks-like-an-array-duck/
  * - http://stackoverflow.com/questions/6599071/array-like-objects-in-javascript
  */
-yen.fn.splice = Array.prototype.splice
-yen.fn.length = 0
+yenFn.splice = Array.prototype.splice
+yenFn.length = 0
 
 
 var Events = require('./events')
@@ -760,19 +761,19 @@ var Events = require('./events')
 /*
  * Event System for yen
  */
-yen.fn.on = function(type, fn) {
+yenFn.on = function(type, fn) {
   return this.each(function(elem) {
     Events.on(elem, type, fn)
   })
 }
 
-yen.fn.off = function(type, fn) {
+yenFn.off = function(type, fn) {
   return this.each(function(elem) {
     Events.off(elem, type, fn)
   })
 }
 
-yen.fn.trigger = function(e) {
+yenFn.trigger = function(e) {
   return this.each(function(elem) {
     Events.trigger(elem, e)
   })
