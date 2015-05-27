@@ -1,0 +1,21 @@
+{
+  "name": "yen",
+  "main": "index.js",
+  "version": "1.1.0",
+  "homepage": "https://github.com/erzu/yen",
+  "authors": [
+    "Chen Yicai <yicai.cyj@taobao.com>"
+  ],
+  "description": "jQuery inspired DOM selection and manipulation library.",
+  "keywords": [
+    "DOM",
+    "library"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "tests"
+  ]
+}
