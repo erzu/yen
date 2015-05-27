@@ -1,6 +1,47 @@
 'use strict';
 
-var _ = require('@ali/belt')
+
+/*
+ * Turns margin-left into marginLeft.
+ *
+ * References:
+ * - http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-camelize
+ */
+function camelize(str) {
+  return str.replace(/-([a-z])/g, function(m, chr) {
+    return chr.toUpperCase()
+  })
+}
+
+/*
+ * Turns marginLeft into margin-left
+ */
+function dasherize(str) {
+  return str.replace(/([A-Z])/g, function(m, chr) {
+    return '-' + chr.toLowerCase()
+  })
+}
+
+function capitalize(str) {
+  return str.replace(/^([a-z])/, function(m, chr) {
+    return chr.toUpperCase()
+  })
+}
+
+function cast(str) {
+  if (/^true|false$/.test(str)) {
+    return str === 'true'
+  }
+  else if (/^\d+$/.test(str)) {
+    return parseInt(str, 10)
+  }
+  else if (/^\d+\.\d+$/.test(str)) {
+    return parseFloat(str)
+  }
+  else {
+    return str
+  }
+}
 
 
 /*
@@ -233,11 +274,11 @@ function _getLastElementChild(node) {
  */
 function _getStyle(el, prop) {
   if (win.getComputedStyle) {
-    prop = _.dasherize(prop)
+    prop = dasherize(prop)
     return getComputedStyle(el).getPropertyValue(prop)
   }
   else if (el.currentStyle) {
-    prop = _.camelize(prop)
+    prop = camelize(prop)
     return el.currentStyle[prop]
   }
 }
@@ -477,7 +518,7 @@ yen.fn.val = function(value) {
  */
 yen.fn.data = function(attr, value) {
   if (typeof value === 'undefined' && this.length > 0) {
-    return _.cast(this[0].getAttribute('data-' + attr))
+    return cast(this[0].getAttribute('data-' + attr))
   }
   else {
     return this.each(function(el) {
@@ -558,7 +599,7 @@ yen.fn.hide = function() {
  */
 ;['height', 'width'].forEach(function(dimension) {
   var Pair = dimension === 'height' ? ['Top', 'Bottom'] : ['Left', 'Right']
-  var Dimension = _.capitalize(dimension)
+  var Dimension = capitalize(dimension)
 
   function toInteger(str) {
     var res = parseInt(str, 10)
@@ -602,11 +643,11 @@ yen.fn.css = function(p, v) {
   return this.each(function(el) {
     if (typeof v == 'undefined' && typeof p == 'object') {
       for (var prop in p) {
-        _setStyle(el, _.camelize(prop), p[prop])
+        _setStyle(el, camelize(prop), p[prop])
       }
     }
     else {
-      _setStyle(el, _.camelize(p), v)
+      _setStyle(el, camelize(p), v)
     }
   })
 }
