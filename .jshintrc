@@ -5,6 +5,9 @@
   "globals": {
     "require": false,
     "exports": false,
+    "window": false,
+    "document": false,
+    "getComputedStyle": false,
     "module": false
   }
 }
