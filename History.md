@@ -1,7 +1,7 @@
 1.1.0 / 2015-05-26
 ==================
 
- * Switch to caka
+ * Switch to oceanify
  * Remove dependencies
 
 
