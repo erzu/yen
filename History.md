@@ -1,3 +1,10 @@
+1.1.1 / 2015-05-27
+==================
+
+ * Fix errors in readme and add some links for further reading
+ * Licensed under MIT
+
+
 1.1.0 / 2015-05-26
 ==================
 
