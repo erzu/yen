@@ -1,3 +1,11 @@
+
+1.1.2 / 2015-05-28
+==================
+
+ * Fix dom selection when context that is not the root document.
+   e.g. `$('#el-within-iframe', iframe.contentDocument)`
+
+
 1.1.1 / 2015-05-27
 ==================
 
