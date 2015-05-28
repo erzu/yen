@@ -109,7 +109,13 @@ function _findMatchingElements(selector, context, firstMatch) {
   var selectedElements = []
 
   if (/^#[a-z]+$/i.test(selector)){  // 优化单独的ID选择器
-    el = doc.getElementById(selector.slice(1))
+    if (typeof context.getElementById === "function") {
+      el = context.getElementById(selector.slice(1))
+    }
+    else {
+      el = doc.getElementById(selector.slice(1))
+    }
+
     if (!el) {
       return selectedElements
     }
