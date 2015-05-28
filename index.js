@@ -109,12 +109,7 @@ function _findMatchingElements(selector, context, firstMatch) {
   var selectedElements = []
 
   if (/^#[a-z]+$/i.test(selector)){  // 优化单独的ID选择器
-    if (typeof context.getElementById === "function") {
-      el = context.getElementById(selector.slice(1))
-    }
-    else {
-      el = doc.getElementById(selector.slice(1))
-    }
+    el = (context.ownerDocument || context).getElementById(selector.slice(1))
 
     if (!el) {
       return selectedElements
@@ -344,6 +339,9 @@ function YSet(selector, context) {
 
     if (m) {
       nodes = [document.createElement(m[1])]
+    }
+    else if (context instanceof YSet) {
+      return context.find(selector)
     }
     else if (context.querySelectorAll) {
       nodes = context.querySelectorAll(selector)

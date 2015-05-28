@@ -324,4 +324,44 @@ describe('yen', function() {
       expect($([]).length).to.be(0)
     })
   })
+
+  describe('iframe', function() {
+    before(function() {
+      $('#fixture').html(heredoc(function() {/*
+        <div id="division" class="outer">
+          <h1 id="title" class="title"></h1>
+        </div>
+        <iframe id="aFrame"></iframe>
+      */}))
+      //debugger
+      var iDoc = document.getElementById('aFrame').contentDocument || document.getElementById('aFrame').contentWindow.document
+      iDoc.write(heredoc(function() {/*
+        <html>
+          <body>
+            <div id="division" class="inner">
+              <h2 id="title" class="title"></h2>
+            </div>
+          </body>
+        </html>
+      */})
+      )
+    })
+
+    it('can select by context', function() {
+      var iDoc = document.getElementById('aFrame').contentDocument || document.getElementById('aFrame').contentWindow.document
+      expect($('#title', iDoc)[0].nodeName.toLowerCase()).to.be('h2')
+      expect($('.title', iDoc)[0].nodeName.toLowerCase()).to.be('h2')
+    })
+
+    it('will check context ownerDocument when select by id', function() {
+      var iDoc = document.getElementById('aFrame').contentDocument || document.getElementById('aFrame').contentWindow.document
+      var outer = $('.outer')
+      var inner = $('.inner', iDoc)
+
+      expect($('#title', outer).length).to.be(1)
+      expect($('#title', inner).length).to.be(1)
+      expect($('#title', outer)[0].nodeName.toLowerCase()).to.be('h1')
+      expect($('#title', inner)[0].nodeName.toLowerCase()).to.be('h2')
+    })
+  })
 })
