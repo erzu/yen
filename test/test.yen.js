@@ -333,7 +333,6 @@ describe('yen', function() {
         </div>
         <iframe id="aFrame"></iframe>
       */}))
-      //debugger
       var iDoc = document.getElementById('aFrame').contentDocument || document.getElementById('aFrame').contentWindow.document
       iDoc.write(heredoc(function() {/*
         <html>
