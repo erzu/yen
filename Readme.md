@@ -1,5 +1,8 @@
 # yen
 
+[![NPM Downloads](https://img.shields.io/npm/dm/yen.svg?style=flat)](https://www.npmjs.com/package/yen) 
+[![NPM Version](http://img.shields.io/npm/v/yen.svg?style=flat)](https://www.npmjs.com/package/yen) 
+
 类似 jQuery 的 DOM 选择与操作库。
 
 
