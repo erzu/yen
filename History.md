@@ -1,4 +1,12 @@
 
+1.1.3 / 2015-05-30
+==================
+
+ * Return the right element when selector is window #4
+ * Add npm badges
+ * Add editorconfig #5
+
+
 1.1.2 / 2015-05-28
 ==================
 
