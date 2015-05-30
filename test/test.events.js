@@ -196,5 +196,14 @@ describe('yen/events', function() {
       i++
       ul.trigger('click')
     })
+
+    it('can add resizing listener to window', function() {
+      var count = 0
+      $(window).on('resize', function(e) {
+        count++
+      })
+      $(window).trigger('resize')
+      expect(count).to.be(1)
+    })
   })
 })

@@ -43,6 +43,11 @@ function cast(str) {
   }
 }
 
+function isArray(obj) {
+  return typeof Array.isArray === 'function' ?
+    Array.isArray(obj) :
+    Object.prototype.toString.call(arg) === '[object Array]'
+}
 
 /*
  * Cannot rename `this` in strict mode. So let's just use window object directly.
@@ -351,7 +356,7 @@ function YSet(selector, context) {
     }
   }
   else if (selector) {
-    nodes = 'length' in selector ? _uniq(selector) : [selector]
+    nodes = isArray(selector) ? _uniq(selector) : [selector]
   }
 
   var len = nodes.length

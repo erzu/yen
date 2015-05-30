@@ -320,6 +320,10 @@ describe('yen', function() {
       expect($(document).length).to.be(1)
     })
 
+    it('can select window', function() {
+      expect($(window).length).to.be(1)
+    })
+
     it('can construct []', function() {
       expect($([]).length).to.be(0)
     })
@@ -344,6 +348,11 @@ describe('yen', function() {
         </html>
       */})
       )
+    })
+
+    it('can select iFrame window', function() {
+      var win = document.getElementById('aFrame').contentWindow
+      expect($(win).length).to.be(1)
     })
 
     it('can select by context', function() {
