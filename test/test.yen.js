@@ -332,7 +332,9 @@ describe('yen', function() {
     })
 
     it('accept yen instance', function() {
-      expect($($(document))[0]).to.equal(document)
+      var a = $(document)
+      expect($(a)[0]).to.equal(document)
+      expect($(a)).to.not.equal(a)    // should return a clone
     })
   })
 
