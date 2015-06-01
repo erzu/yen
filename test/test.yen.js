@@ -315,17 +315,24 @@ describe('yen', function() {
       expect($('object').length).to.be(1)
       expect($(document.getElementsByTagName('object')[0]).length).to.be(1)
     })
+  })
 
-    it('can select document', function() {
+  describe('constructor', function() {
+    it('accept document', function() {
       expect($(document).length).to.be(1)
     })
 
-    it('can select window', function() {
+    it('accept window', function() {
       expect($(window).length).to.be(1)
     })
 
-    it('can construct []', function() {
+    it('accept []', function() {
       expect($([]).length).to.be(0)
+      expect($([1, 2, 3]).length).to.be(3)
+    })
+
+    it('accept yen instance', function() {
+      expect($($(document))[0]).to.equal(document)
     })
   })
 

@@ -43,10 +43,8 @@ function cast(str) {
   }
 }
 
-function isArray(obj) {
-  return typeof Array.isArray === 'function' ?
-    Array.isArray(obj) :
-    Object.prototype.toString.call(arg) === '[object Array]'
+var isArray = typeof Array.isArray === 'function' ? Array.isArray : function(obj) {
+  return Object.prototype.toString.call(obj) === '[object Array]'
 }
 
 /*
@@ -354,6 +352,9 @@ function YSet(selector, context) {
     else {
       nodes = _querySelectorAll(selector, context)
     }
+  }
+  else if (selector instanceof YSet) {
+    nodes = selector
   }
   else if (selector) {
     nodes = isArray(selector) ? _uniq(selector) : [selector]
