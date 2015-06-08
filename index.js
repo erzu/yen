@@ -528,8 +528,11 @@ yenFn.val = function(value) {
  * Whether or not to use Element@dataset?
  */
 yenFn.data = function(attr, value) {
-  if (typeof value === 'undefined' && this.length > 0) {
-    return cast(this[0].getAttribute('data-' + attr))
+  if (typeof value === 'undefined') {
+    if (this.length > 0) {
+      var val = this[0].getAttribute('data-' + attr)
+      return cast(val === null ? undefined : val)
+    }
   }
   else {
     return this.each(function(el) {

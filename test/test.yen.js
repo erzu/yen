@@ -315,6 +315,25 @@ describe('yen', function() {
       expect($('object').length).to.be(1)
       expect($(document.getElementsByTagName('object')[0]).length).to.be(1)
     })
+
+    it('.data', function() {
+      var el = $('#fixture')
+        .data('bar', 'coco')
+        .data('baz', true)
+
+      // shall behave like el.dataset.foo.
+      expect(el.data('foo')).to.be(undefined)
+
+      expect(el.data('bar')).to.be('coco')
+      expect(el.data('baz')).to.be(true)
+
+      // shall return the selection itself when setting data.
+      expect(el.data('foo', true)).to.be(el)
+
+      // shall not return the selection itself when getting data value of an
+      // empty selection. #8
+      expect($([]).data('foo')).to.be(undefined)
+    })
   })
 
   describe('constructor', function() {
