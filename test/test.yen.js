@@ -317,18 +317,20 @@ describe('yen', function() {
     })
 
     it('.data', function() {
-      var el = $('#fixture')
-        .data('bar', 'coco')
-        .data('baz', true)
+      var el = $('#fixture').html(heredoc(function() {/*
+        <div data-bar="g+" data-baz="true"></div>
+      */}))
+        .find('div:first-child')
 
       // shall behave like el.dataset.foo.
       expect(el.data('foo')).to.be(undefined)
 
-      expect(el.data('bar')).to.be('coco')
+      expect(el.data('bar')).to.be('g+')
       expect(el.data('baz')).to.be(true)
 
       // shall return the selection itself when setting data.
       expect(el.data('foo', true)).to.be(el)
+      expect(el.data('foo')).to.be(true)
 
       // shall not return the selection itself when getting data value of an
       // empty selection. #8
