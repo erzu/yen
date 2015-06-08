@@ -526,10 +526,18 @@ yenFn.val = function(value) {
 
 /*
  * Whether or not to use Element@dataset?
+ *
+ * 2015-06-08 @dotnil
+ * In IE6, if we set data attribute with non-string value and retrieve it later
+ * via getAttribute('data-foo'), it will return the original non-string value.
+ * This will cause the cast process fail.
  */
 yenFn.data = function(attr, value) {
-  if (typeof value === 'undefined' && this.length > 0) {
-    return cast(this[0].getAttribute('data-' + attr))
+  if (typeof value === 'undefined') {
+    if (this.length > 0) {
+      var val = this[0].getAttribute('data-' + attr)
+      return val === null ? undefined : (typeof val === 'string' ? cast(val) : val)
+    }
   }
   else {
     return this.each(function(el) {
