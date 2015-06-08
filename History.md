@@ -1,4 +1,17 @@
 
+1.1.5 / 2015-06-08
+==================
+
+ * Found and fixed an edge case in IE6
+ * Fixed issue with `$([]).data('foo')`
+
+
+1.1.4 / 2015-06-01
+==================
+
+ * Fix selection instance check
+
+
 1.1.3 / 2015-05-30
 ==================
 
