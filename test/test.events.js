@@ -1,8 +1,10 @@
-'use strict';
+'use strict'
 
 var $ = require('yen')
-var Events = $.Events
+var expect = require('expect.js')
 var heredoc = require('heredoc').strip
+
+var Events = $.Events
 
 
 describe('yen/events', function() {
@@ -79,10 +81,10 @@ describe('yen/events', function() {
       var count = 0
 
       function handler1() {
-        count++;
+        count++
       }
       function handler2() {
-        count+=2;
+        count += 2
       }
 
       Events.on(test, 'custom', handler1)
@@ -199,7 +201,7 @@ describe('yen/events', function() {
 
     it('can add resizing listener to window', function() {
       var count = 0
-      $(window).on('resize', function(e) {
+      $(window).on('resize', function() {
         count++
       })
       $(window).trigger('resize')
