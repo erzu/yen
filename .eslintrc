@@ -3,9 +3,6 @@
     "node": true,
     "browser": true
   },
-  "globals": {
-    "define": true
-  },
   "rules": {
     "curly": [2, "multi-line"],
     "consistent-return": 0,
