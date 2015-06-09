@@ -4,21 +4,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Runner</title>
-    <link type="text/css" rel="stylesheet" href="http://amo.alicdn.com/L1/377/101010/assets/mocha-932de965a07255c38bbb1e9f678cde64.css" />
+    <link type="text/css" rel="stylesheet" href="/node_modules/mocha/mocha.css" />
   </head>
   <body>
     <div id="mocha"></div>
     <div id="fixture" style="display:none"></div>
-    <script src="http://amo.alicdn.com/L1/377/101010/assets/mocha-39ab115a28db1aa1b20a33772d1272a1.js"></script>
-    <script src="http://amo.alicdn.com/L1/377/101010/assets/expect-0c4d7b1e6c1f3df2bfaba7fadb0a2732.js"></script>
+    <script src="/node_modules/mocha/mocha.js"></script>
     <script src="http://amo.alicdn.com/L1/377/101010/sea.js"></script>
     <!--[if lte IE 9]><!-->
     <script src="http://amo.alicdn.com/L1/377/101010/assets/es5-7dfe7fb63d161c704e2f35874957b921.js"></script>
     <!--<![endif]-->
     <script src="/config.js"></script>
     <script>
-    /* jshint strict: false */
-    /* globals mocha: false, seajs: false */
+      /* eslint-disable */
       mocha.ui('bdd')
       seajs.use([
         'yen/test/test.yen',

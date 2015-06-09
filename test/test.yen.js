@@ -1,6 +1,7 @@
-'use strict';
+'use strict'
 
 var $ = require('yen')
+var expect = require('expect.js')
 var heredoc = require('heredoc').strip
 
 

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /*
  * _getData and _removeData
@@ -51,7 +51,7 @@ function _isEventSupported(eventName) {
 
   if (!isSupported) {
     element.setAttribute(eventName, 'return;')
-    isSupported = typeof element[eventName] == 'function'
+    isSupported = typeof element[eventName] === 'function'
   }
 
   element = null
@@ -182,7 +182,7 @@ function _tidyUp(elem, type) {
 
   if (isEmpty(data.handlers)) {
     delete data.handlers
-    ;delete data.dispatcher
+    delete data.dispatcher
   }
 
   if (isEmpty(data)) {
@@ -270,7 +270,7 @@ Events.on = function(elem, type, fn) {
     }
   }
 
-  if (data.handlers[type].length == 1) {
+  if (data.handlers[type].length === 1) {
     if (!elem.addEventListener && !elem.attachEvent) {
       // custom object, just return
       return
@@ -298,7 +298,7 @@ Events.off = function(elem, type, fn) {
   var removeType = function(t) {
     data.handlers[t] = []
     _tidyUp(elem, t)
-  };
+  }
 
   if (!type) {
     for (var t in data.handlers) removeType(t)

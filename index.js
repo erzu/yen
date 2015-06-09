@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 
 /*
@@ -57,7 +57,6 @@ var doc = win.document
 /*
  * IE[6-8] does not have global Node interface, let's just pretend there is one.
  */
-/* global -Node */
 var Node = win.Node || {
   ELEMENT_NODE: 1,
   DOCUMENT_NODE: 9
@@ -85,7 +84,7 @@ function _removeClass(el, cls) {
     var classes = el.className.trim().split(/\s+/)
 
     for (var i = classes.length - 1; i >= 0; i--) {
-      if (classes[i] == cls) {
+      if (classes[i] === cls) {
         classes.splice(i, 1)
       }
     }
@@ -137,20 +136,20 @@ function _findMatchingElements(selector, context, firstMatch) {
   return selectedElements
 }
 
-function _matchesCommaSelectorList(el, selector, context) {
-  if (el.matches) return el.matches(selector)
+function _matchesCommaSelectorList(el, selectorWithComma, context) {
+  if (el.matches) return el.matches(selectorWithComma)
 
-  var selectorList = selector.split(',')
-  return selectorList.some(function(selector){
+  return selectorWithComma.split(',').some(function(selector){
     if (_matchesDescendantSelectorList(el, selector, context)) {
       return true
     }
   })
 }
 
-function _matchesDescendantSelectorList(el, selector, context) {
+function _matchesDescendantSelectorList(el, selectorWithSpace, context) {
   var childSelectorMatchesElement
-  var selectorList = selector.replace(/>/g,' $& ').trim().split(/\s+/).reverse()
+  var selectorList = selectorWithSpace.replace(/>/g, ' $& ').trim().split(/\s+/).reverse()
+
   return selectorList.every(function(selector, index){
     if (index === 0) {
       return _matchesSimpleSelectorList(el, selector) && _isAncestor(context, el)
@@ -195,13 +194,13 @@ function _matches(el, selector) {
 
   var fchar = selector.charAt(0)
 
-  if (fchar == '#') {
+  if (fchar === '#') {
     return el.id === selector.slice(1)
   }
-  else if (fchar == '.') {
+  else if (fchar === '.') {
     return _hasClass(el, selector.slice(1))
   }
-  else if (fchar == '[') {
+  else if (fchar === '[') {
     var matchResult = selector.match(/^\[(.+?)(=(["']?)(.*?)\3)?]$/i)
     var attrName = matchResult[1]
     var hasAttrValue = !!matchResult[2]
@@ -214,11 +213,11 @@ function _matches(el, selector) {
     var value = attrName === 'class' ? el.className : el.getAttribute(attrName)
     return attrValue === undefined ? value !== null : value === attrValue
   }
-  else if (fchar == ':') {
+  else if (fchar === ':') {
     var pseudoClass = selector.slice(1)
 
     switch(pseudoClass){
-      case  'first-child' :
+      case 'first-child' :
         return (el.parentNode.firstElementChild || _getFirstElementChild(el.parentNode)) === el
       case 'last-child':
         return (el.parentNode.lastElementChild || _getLastElementChild(el.parentNode)) === el
@@ -287,10 +286,6 @@ function _getStyle(el, prop) {
   }
 }
 
-function _setStyle(el, prop, value) {
-  el.style[prop] = _regulate(value, prop)
-}
-
 function _regulate(value, prop) {
   if (!value) return value
 
@@ -300,6 +295,10 @@ function _regulate(value, prop) {
   }
 
   return value
+}
+
+function _setStyle(el, prop, value) {
+  el.style[prop] = _regulate(value, prop)
 }
 
 function _uniq(arr) {
@@ -337,7 +336,7 @@ function YSet(selector, context) {
   else if (selector.nodeType) {
     nodes = [selector]
   }
-  else if (typeof selector == 'string') {
+  else if (typeof selector === 'string') {
     var m = selector.match(RE_HTML)
 
     if (m) {
@@ -389,7 +388,7 @@ yenFn.next = function(selector) {
   var candidate
 
   while (node && (node = node.nextSibling)) {
-    if (node.nodeType == Node.ELEMENT_NODE &&
+    if (node.nodeType === Node.ELEMENT_NODE &&
         (!selector || _matchesCommaSelectorList(node, selector, this.context))) {
       candidate = node
       break
@@ -404,7 +403,7 @@ yenFn.prev = function(selector) {
   var candidate
 
   while (node && (node = node.previousSibling)) {
-    if (node.nodeType == Node.ELEMENT_NODE &&
+    if (node.nodeType === Node.ELEMENT_NODE &&
         (!selector || _matchesCommaSelectorList(node, selector, this.context))) {
       candidate = node
       break
@@ -416,10 +415,10 @@ yenFn.prev = function(selector) {
 
 yenFn.is = function(selector) {
   for (var i = 0, len = this.length; i < len; i++) {
-    if (typeof selector == 'string') {
+    if (typeof selector === 'string') {
       if (_matchesCommaSelectorList(this[i], selector, this.context)) return true
     } else {
-      if (this[i] == selector) return true
+      if (this[i] === selector) return true
     }
   }
 
@@ -469,7 +468,7 @@ yenFn.toggleClass = function(cls) {
 }
 
 yenFn.html = function(markup) {
-  if (typeof markup == 'undefined') {
+  if (typeof markup === 'undefined') {
     return this[0].innerHTML
   }
   else {
@@ -480,7 +479,7 @@ yenFn.html = function(markup) {
 }
 
 yenFn.attr = function(p, v) {
-  if (typeof v == 'undefined' && this.length > 0) {
+  if (typeof v === 'undefined' && this.length > 0) {
     return this[0].getAttribute(p)
   }
   else {
@@ -565,7 +564,7 @@ yenFn.children = function(selector) {
     var el = this[i].firstChild
 
     while (el) {
-      if (Node.ELEMENT_NODE == el.nodeType &&
+      if (Node.ELEMENT_NODE === el.nodeType &&
           (!selector || _matchesCommaSelectorList(el, selector, this.context))) {
         candidates.push(el)
       }
@@ -616,7 +615,7 @@ yenFn.hide = function() {
  * But current approach will return correct value even if the element is hidden,
  * e.g. element.style.display === 'none'.
  */
-;['height', 'width'].forEach(function(dimension) {
+; ['height', 'width'].forEach(function(dimension) {
   var Pair = dimension === 'height' ? ['Top', 'Bottom'] : ['Left', 'Right']
   var Dimension = capitalize(dimension)
 
@@ -631,8 +630,8 @@ yenFn.hide = function() {
 
   yenFn['inner' + Dimension] = function() {
     var self = this
-    return this[dimension]() + Pair.reduce(function(result, prop) {
-        return result + toInteger(self.css('padding' + prop))
+    return this[dimension]() + Pair.reduce(function(total, prop) {
+        return total + toInteger(self.css('padding' + prop))
       }, 0)
   }
 
@@ -640,13 +639,13 @@ yenFn.hide = function() {
     var self = this
     var result = this['inner' + Dimension]()
 
-    result += Pair.reduce(function(result, prop) {
-      return result + toInteger(self.css('border' + prop + 'Width'))
+    result += Pair.reduce(function(total, prop) {
+      return total + toInteger(self.css('border' + prop + 'Width'))
     }, 0)
 
     if (includeMargin) {
-      result += Pair.reduce(function(result, prop) {
-        return result + toInteger(self.css('margin' + prop))
+      result += Pair.reduce(function(total, prop) {
+        return total + toInteger(self.css('margin' + prop))
       }, 0)
     }
 
@@ -655,12 +654,12 @@ yenFn.hide = function() {
 })
 
 yenFn.css = function(p, v) {
-  if (typeof v == 'undefined' && typeof p == 'string' && this.length > 0) {
+  if (typeof v === 'undefined' && typeof p === 'string' && this.length > 0) {
     return _getStyle(this[0], p)
   }
 
   return this.each(function(el) {
-    if (typeof v == 'undefined' && typeof p == 'object') {
+    if (typeof v === 'undefined' && typeof p === 'object') {
       for (var prop in p) {
         _setStyle(el, camelize(prop), p[prop])
       }
@@ -671,40 +670,27 @@ yenFn.css = function(p, v) {
   })
 }
 
-yenFn.prepend = function(content) {
-  if (typeof content === 'string') {
-    content = document.createTextNode(content)
+yenFn.prepend = function(child) {
+  if (typeof child === 'string') {
+    child = document.createTextNode(child)
   }
 
   return this.each(function(el) {
-    if (content instanceof YSet) {
-      content.each(function(content) {
-        el.insertBefore(content, el.firstChild)
-      })
-    }
-    else if (content.nodeType === 1) {
-      el.insertBefore(content, el.firstChild)
-    }
-    else {
-      el.insertBefore(content, el.firstChild)
-    }
+    new YSet(child).each(function(childEl) {
+      el.insertBefore(childEl, el.firstChild)
+    })
   })
 }
 
-yenFn.append = function(content) {
-  if (typeof content === 'string') {
-    content = document.createTextNode(content)
+yenFn.append = function(child) {
+  if (typeof child === 'string') {
+    child = document.createTextNode(child)
   }
 
   return this.each(function(el) {
-    if (content instanceof YSet) {
-      content.each(function(child) {
-        el.appendChild(child)
-      })
-    }
-    else {
-      el.appendChild(content)
-    }
+    new YSet(child).each(function(childEl) {
+      el.appendChild(childEl)
+    })
   })
 }
 
@@ -742,19 +728,17 @@ yenFn.position = function() {
 yenFn.offset = function() {
   if (this.length > 0) {
     var el = this[0]
-    var box = { top: 0, left: 0 }
-    var doc = el && el.ownerDocument
-    var docElem
+    var documentEl = el && el.ownerDocument && el.ownerDocument.documentElement
 
-    if (!doc) return
-    docElem = doc.documentElement
+    if (!documentEl) return
 
-    if (typeof el.getBoundingClientRect !== undefined)
-      box = el.getBoundingClientRect()
+    var box = typeof el.getBoundingClientRect === 'function'
+      ? el.getBoundingClientRect()
+      : { top: 0, left: 0 }
 
     return {
-      top: box.top + win.pageYOffset - docElem.clientTop,
-      left: box.left + win.pageXOffset - docElem.clientLeft
+      top: box.top + win.pageYOffset - documentEl.clientTop,
+      left: box.left + win.pageXOffset - documentEl.clientLeft
     }
   }
 }
