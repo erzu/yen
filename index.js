@@ -1,5 +1,7 @@
 'use strict'
 
+var Events = require('./events')
+
 
 /*
  * Turns margin-left into marginLeft.
@@ -745,6 +747,23 @@ yenFn.offset = function() {
   }
 }
 
+yenFn.empty = function(){
+  return this.each(function(el){
+    if (el.nodeType === 1) {
+      //prevent memory leaks
+      new YSet(el).find('*').each(function(child) {
+        if (child.nodeType === 1) {
+          Events.off(child)
+        }
+      })
+    }
+
+    while (el.firstChild) {
+      el.removeChild(el.firstChild)
+    }
+  })
+}
+
 
 /*
  * The customized object will behave like array in console if the object has got
@@ -757,9 +776,6 @@ yenFn.offset = function() {
  */
 yenFn.splice = Array.prototype.splice
 yenFn.length = 0
-
-
-var Events = require('./events')
 
 
 /*
