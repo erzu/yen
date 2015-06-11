@@ -87,6 +87,9 @@ describe('yen', function() {
       var el = $('.fixture-attr')
       expect(el.attr('data-foo')).to.equal('Foo')
       expect(el.attr('data-foo', 'egg').attr('data-foo')).to.equal('egg')
+
+      el = $('vaporware')
+      expect(el.attr('foo')).to.equal(undefined)
     })
 
     it('.hasAttr', function() {

@@ -479,8 +479,10 @@ yenFn.html = function(markup) {
 }
 
 yenFn.attr = function(p, v) {
-  if (typeof v === 'undefined' && this.length > 0) {
-    return this[0].getAttribute(p)
+  if (typeof v === 'undefined') {
+    if (this.length > 0) {
+      return this[0].getAttribute(p)
+    }
   }
   else {
     return this.each(function(el) {
