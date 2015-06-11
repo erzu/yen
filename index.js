@@ -1,5 +1,7 @@
 'use strict'
 
+var Events = require('./events')
+
 
 /*
  * Turns margin-left into marginLeft.
@@ -745,16 +747,16 @@ yenFn.offset = function() {
 
 yenFn.empty = function(){
   return this.each(function(el){
-    if(el.nodeType === 1) {
+    if (el.nodeType === 1) {
       //prevent memory leaks
       new YSet(el).find('*').each(function(child){
-        if(child.nodeType === 1) {
-         yen.Events.off(child)
+        if (child.nodeType === 1) {
+          Events.off(child)
         }
       })
     }
 
-    while(el.firstChild) {
+    while (el.firstChild) {
       el.removeChild(el.firstChild)
     }
   })
@@ -772,9 +774,6 @@ yenFn.empty = function(){
  */
 yenFn.splice = Array.prototype.splice
 yenFn.length = 0
-
-
-var Events = require('./events')
 
 
 /*
