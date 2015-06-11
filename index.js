@@ -749,7 +749,7 @@ yenFn.empty = function(){
       //prevent memory leaks
       new YSet(el).find('*').each(function(child){
         if(child.nodeType === 1) {
-         Events.off(child)
+         yen.Events.off(child)
         }
       })
     }
