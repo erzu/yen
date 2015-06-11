@@ -60,6 +60,16 @@ describe('yen', function() {
         <div class="fixture-css" style="width: 100px; padding-top: 20px; padding-bottom: 20px; margin-left: 20px;"></div>
         <div class="fixture-append"></div>
         <div class="fixture-prepend"></div>
+        <div class="fixture-empty">
+          <ul>
+            <li></li>
+          </ul>
+          <select id="" name="">
+            <options value="1">1</options>
+            <options value="2">2</options>
+            <options value="3">3</options>
+          </select>
+        </div>
         <style>.fixture-css { padding: 10px; margin: 10px; }</style>
       */}))
     })
@@ -144,6 +154,12 @@ describe('yen', function() {
       $(div).html('Test prepend-dom')
       el.prepend(div)
       expect($(el.children()[0]).html()).to.equal('Test prepend-dom')
+    })
+
+    it('.empty', function(){
+      var el = $('.fixture-empty')
+      el.empty()
+      expect(el.html()).to.equal('')
     })
   })
 
