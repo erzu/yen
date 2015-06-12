@@ -251,9 +251,8 @@ describe('yen', function() {
 
     it('.parent', function() {
       var el = $('#fixture .bar')
-      expect(el.parent()[0].tagName.toLowerCase()).to.be('ol')
-      expect(el.parent('#fixture').length).to.be(1)
-      expect(el.parent('#fixture').attr('id')).to.be('fixture')
+      expect(el.parent().is('ol')).to.be(true)
+      expect(el.parent('#fixture').length).to.be(0)
 
       // find all parents of elements within matched set.
       expect($('#fixture li').parent().length).to.be(2)
@@ -261,6 +260,37 @@ describe('yen', function() {
 
       // return empty set if there's no parentNode.
       expect($(document).parent()).to.be.a($)
+      expect($(document).parent().length).to.be(0)
+    })
+
+    it('.parents', function() {
+      var el = $('#fixture .bar')
+      expect(el.parents('#fixture').length).to.be(1)
+      expect(el.parents().length).to.be.greaterThan(1)
+
+      expect($(document).parents().length).to.be(0)
+
+      // ol -> #fixture -> body -> html -> document
+      // and there are two ol elements. Hence the total is 6.
+      expect($('#fixture li').parents().length).to.be(6)
+    })
+
+    it('.closest', function() {
+      expect($('#fixture .bar').closest('li').length).to.be(1)
+      expect($('#fixture .bar, #fixture .foo').closest('li').length).to.be(2)
+      expect($('#fixture li').closest('li').length).to.be(5)
+      expect($('#fixture li').closest('*').length).to.be(5)
+
+      // http://api.jquery.com/closest/ won't yield an error if selector param
+      // is missing. Let's just stick with jQuery.
+      expect($(document).closest().length).to.be(0)
+    })
+
+    it('.filter', function() {
+      expect($('#fixture li').filter('.foo, .bar').length).to.be(2)
+      expect($('#fixture li').filter('ol').length).to.be(0)
+
+      expect($(document).filter().length).to.be(0)
     })
 
     it('.first', function() {
