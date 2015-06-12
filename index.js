@@ -609,23 +609,30 @@ yenFn.parents = function(selector) {
     : new YSet(candidates)
 }
 
+var hasClosest = !!Element.prototype.closest
 yenFn.closest = function(selector) {
-  var candidates = []
-
   if (!selector) return new YSet(candidates)
+
+  if (hasClosest) {
+    return this.map(function(el) {
+      return el.closest(selector)
+    })
+  }
+
+  var candidates = []
 
   for (var i = 0, len = this.length; i < len; i++) {
     var el = this[i]
 
     while (el) {
-      candidates.push(el)
+      if (_matchesCommaSelectorList(el, selector, this.context)) {
+        candidates.push(el)
+        break
+      }
       el = el.parentNode
     }
   }
-
-  return selector
-    ? new YSet(candidates).filter(selector)
-    : new YSet(candidates)
+  return new YSet(candidates)
 }
 
 yenFn.filter = function(selector) {

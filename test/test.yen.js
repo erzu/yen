@@ -279,6 +279,7 @@ describe('yen', function() {
       expect($('#fixture .bar').closest('li').length).to.be(1)
       expect($('#fixture .bar, #fixture .foo').closest('li').length).to.be(2)
       expect($('#fixture li').closest('li').length).to.be(5)
+      expect($('#fixture li').closest('*').length).to.be(5)
 
       // http://api.jquery.com/closest/ won't yield an error if selector param
       // is missing. Let's just stick with jQuery.
