@@ -287,7 +287,7 @@ describe('yen', function() {
 
     it('.filter', function() {
       expect($('#fixture li').filter('.foo, .bar').length).to.be(2)
-      expect($('#fixture li').filter('ol').length).to.be(1)
+      expect($('#fixture li').filter('ol').length).to.be(0)
 
       expect($(document).filter().length).to.be(0)
     })
