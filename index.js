@@ -585,11 +585,59 @@ yenFn.parent = function(selector) {
   for (var i = 0, len = this.length; i < len; i++) {
     var el = this[i]
 
+    if ((el = el.parentNode)) candidates.push(el)
+  }
+
+  return selector
+    ? new YSet(candidates).filter(selector)
+    : new YSet(candidates)
+}
+
+yenFn.parents = function(selector) {
+  var candidates = []
+
+  for (var i = 0, len = this.length; i < len; i++) {
+    var el = this[i]
+
     while ((el = el.parentNode)) {
-      if (!selector || _matchesCommaSelectorList(el, selector, this.context)) {
-        candidates.push(el)
-        break
-      }
+      candidates.push(el)
+    }
+  }
+
+  return selector
+    ? new YSet(candidates).filter(selector)
+    : new YSet(candidates)
+}
+
+yenFn.closest = function(selector) {
+  var candidates = []
+
+  if (!selector) return new YSet(candidates)
+
+  for (var i = 0, len = this.length; i < len; i++) {
+    var el = this[i]
+
+    while (el) {
+      candidates.push(el)
+      el = el.parentNode
+    }
+  }
+
+  return selector
+    ? new YSet(candidates).filter(selector)
+    : new YSet(candidates)
+}
+
+yenFn.filter = function(selector) {
+  var candidates = []
+
+  if (!selector) return new YSet(candidates)
+
+  for (var i = 0, len = this.length; i < len; i++) {
+    var el = this[i]
+
+    if (_matchesCommaSelectorList(el, selector, this.context)) {
+      candidates.push(el)
     }
   }
 
@@ -750,7 +798,7 @@ yenFn.offset = function() {
 yenFn.empty = function(){
   return this.each(function(el){
     if (el.nodeType === 1) {
-      //prevent memory leaks
+      // prevent memory leaks
       new YSet(el).find('*').each(function(child) {
         if (child.nodeType === 1) {
           Events.off(child)
