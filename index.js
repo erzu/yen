@@ -435,7 +435,7 @@ yenFn.is = function(selector) {
  * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
  */
 yenFn.each = function(fn) {
-  this.forEach(fn)
+  this.forEach(fn, this)
   return this
 }
 yenFn.forEach = Array.prototype.forEach
@@ -568,15 +568,16 @@ yenFn.children = function(selector) {
     var el = this[i].firstChild
 
     while (el) {
-      if (Node.ELEMENT_NODE === el.nodeType &&
-          (!selector || _matchesCommaSelectorList(el, selector, this.context))) {
+      if (Node.ELEMENT_NODE === el.nodeType) {
         candidates.push(el)
       }
       el = el.nextSibling
     }
   }
 
-  return new YSet(candidates)
+  return selector
+    ? new YSet(candidates).filter(selector)
+    : new YSet(candidates)
 }
 
 yenFn.parent = function(selector) {
@@ -609,42 +610,78 @@ yenFn.parents = function(selector) {
     : new YSet(candidates)
 }
 
-var hasClosest = !!Element.prototype.closest
+
+var hasClosest = !!(win.Element && Element.prototype.closest)
 yenFn.closest = function(selector) {
-  if (!selector) return new YSet(candidates)
-
-  if (hasClosest) {
-    return this.map(function(el) {
-      return el.closest(selector)
-    })
-  }
-
   var candidates = []
 
-  for (var i = 0, len = this.length; i < len; i++) {
-    var el = this[i]
+  if (!selector) {
+    // nothing to do
+  }
+  else if (hasClosest) {
+    this.each(function(_el) {
+      var closest = _el.closest(selector)
+      if (closest) candidates.push(closest)
+    })
+  }
+  else {
+    // can't switch to `this.each` yet. The es5 shim we wrote didn't take the
+    // 2nd parameter of forEach into consideration.
+    //
+    // Will switch after that was fixed.
+    for (var i = 0, len = this.length; i < len; i++) {
+      var el = this[i]
 
-    while (el) {
-      if (_matchesCommaSelectorList(el, selector, this.context)) {
-        candidates.push(el)
-        break
+      while (el) {
+        if (_matchesCommaSelectorList(el, selector, this.context)) {
+          candidates.push(el)
+          break
+        }
+        el = el.parentNode
       }
-      el = el.parentNode
     }
   }
+
   return new YSet(candidates)
 }
 
+
 yenFn.filter = function(selector) {
   var candidates = []
+  var filter
 
-  if (!selector) return new YSet(candidates)
+  if (!selector) {
+    // nothing to do
+  }
+  else if (typeof selector === 'string') {
+    filter = function(index) {
+      return _matchesCommaSelectorList(this[index], selector, this.context)
+    }
+  }
+  else if (selector instanceof YSet) {
+    filter = function(index) {
+      return selector.is(this[index])
+    }
+  }
+  else if (isArray(selector)) {
+    filter = function(index) {
+      return selector.indexOf(this[index]) >= 0
+    }
+  }
+  else if (typeof selector === 'function') {
+    filter = selector
+  }
+  else if (selector.nodeType === Node.ELEMENT_NODE) {
+    filter = function(index) {
+      return this[index] === selector
+    }
+  }
 
-  for (var i = 0, len = this.length; i < len; i++) {
-    var el = this[i]
-
-    if (_matchesCommaSelectorList(el, selector, this.context)) {
-      candidates.push(el)
+  if (filter) {
+    for (var i = 0, len = this.length; i < len; i++) {
+      if (filter.call(this, i)) {
+        candidates.push(this[i])
+      }
     }
   }
 
