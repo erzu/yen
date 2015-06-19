@@ -113,6 +113,12 @@ describe('yen', function() {
       var el = $('.fixture-html')
       expect(el.html()).to.equal('Hello yen')
       expect(el.html('Konijiwa yen').html()).to.equal('Konijiwa yen')
+
+      expect($('vaporware').html()).to.equal(undefined)
+
+      expect(el.html(function(index, oldhtml) {
+        return oldhtml.replace('yen', '￥')
+      }).html()).to.equal('Konijiwa ￥')
     })
 
     it('.css', function() {

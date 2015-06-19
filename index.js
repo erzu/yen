@@ -104,6 +104,7 @@ function _addClass(el, cls) {
   }
 }
 
+
 function _querySelectorAll(selector, context) {
   return _findMatchingElements(selector, context)
 }
@@ -191,6 +192,7 @@ function _matchesSimpleSelectorList(el, selector) {
   return true
 }
 
+
 function _matches(el, selector) {
   if (!el) return false
 
@@ -230,6 +232,7 @@ function _matches(el, selector) {
   }
 }
 
+
 function _isAncestor(ancestor, descendant) {
   while ((descendant = descendant.parentNode)) {
     if (descendant === ancestor) {
@@ -238,6 +241,7 @@ function _isAncestor(ancestor, descendant) {
   }
   return false
 }
+
 
 function _getFirstElementChild(node) {
   var el = node.firstChild
@@ -252,6 +256,7 @@ function _getFirstElementChild(node) {
   return null
 }
 
+
 function _getLastElementChild(node) {
   var el = node.lastChild
 
@@ -264,6 +269,7 @@ function _getLastElementChild(node) {
 
   return null
 }
+
 
 /*
  * Legacy IEs don't have window.getComputedStyle. They have got
@@ -302,6 +308,7 @@ function _regulate(value, prop) {
 function _setStyle(el, prop, value) {
   el.style[prop] = _regulate(value, prop)
 }
+
 
 function _uniq(arr) {
   var result = []
@@ -371,9 +378,25 @@ function YSet(selector, context) {
   this.length = len
 }
 
+
+function _emptyEl(el){
+  if (el.nodeType === Node.ELEMENT_NODE) {
+    // prevent memory leaks
+    new YSet(el).find('*').each(function(child) {
+      if (child.nodeType === 1) {
+        Events.off(child)
+      }
+    })
+  }
+
+  while (el.firstChild) {
+    el.removeChild(el.firstChild)
+  }
+}
+
+
 var yen = YSet
-yen.fn = YSet.prototype
-var yenFn = yen.fn
+var yenFn = yen.fn = YSet.prototype
 
 yenFn.find = function(selector) {
   var candidates = []
@@ -470,11 +493,23 @@ yenFn.toggleClass = function(cls) {
 }
 
 yenFn.html = function(markup) {
-  if (typeof markup === 'undefined') {
-    return this[0].innerHTML
+  var type = typeof markup
+
+  if (type === 'undefined') {
+    if (this.length > 0) {
+      return this[0].innerHTML
+    }
   }
-  else {
+  else if (type === 'function') {
+    return this.each(function(el, index) {
+      var oldhtml = el.innerHTML
+      _emptyEl(el)
+      el.innerHTML = markup(index, oldhtml)
+    })
+  }
+  else if (type === 'string') {
     return this.each(function(el) {
+      _emptyEl(el)
       el.innerHTML = markup
     })
   }
@@ -840,20 +875,7 @@ yenFn.offset = function() {
 }
 
 yenFn.empty = function(){
-  return this.each(function(el){
-    if (el.nodeType === 1) {
-      // prevent memory leaks
-      new YSet(el).find('*').each(function(child) {
-        if (child.nodeType === 1) {
-          Events.off(child)
-        }
-      })
-    }
-
-    while (el.firstChild) {
-      el.removeChild(el.firstChild)
-    }
-  })
+  return this.each(_emptyEl)
 }
 
 
