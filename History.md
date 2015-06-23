@@ -1,3 +1,16 @@
+1.2.0 / 2015-06-23
+==================
+
+ * Fixed #12; implemented .html(function)
+ * Enhanced .filter to support params like function and array
+ * Make closest stop at first match
+ * Fixed #18; implemented .closest(), .parents(), and fixed .parent() behavior
+ * No need to maintain bower package; fix #16
+ * support .empty()
+ * Added test about #11 .attr() and fixed it
+ * Removed unnecessary global define
+ * Switched to eslint and adjusted code accordingly
+
 
 1.1.5 / 2015-06-08
 ==================
