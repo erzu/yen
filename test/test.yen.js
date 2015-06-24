@@ -401,6 +401,8 @@ describe('yen', function() {
       expect(el.data('foo', true)).to.be(el)
       expect(el.data('foo')).to.be(true)
 
+      expect(el.data('qux', 'true story').data('qux')).to.equal('true story')
+
       expect(el.data('foo-bar')).to.be(undefined)
 
       el.data('foo-bar', { foo: { bar: 1 } })

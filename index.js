@@ -33,7 +33,7 @@ function capitalize(str) {
 function cast(str) {
   var firstChar = str.charAt(0)
 
-  if (/^true|false$/.test(str)) {
+  if (str === 'true' || str === 'false') {
     return str === 'true'
   }
   else if (/^\d+$/.test(str)) {
