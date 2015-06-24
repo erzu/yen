@@ -31,6 +31,8 @@ function capitalize(str) {
 }
 
 function cast(str) {
+  var firstChar = str.charAt(0)
+
   if (/^true|false$/.test(str)) {
     return str === 'true'
   }
@@ -40,13 +42,26 @@ function cast(str) {
   else if (/^\d+\.\d+$/.test(str)) {
     return parseFloat(str)
   }
+  else if (firstChar === '{' || firstChar === '[') {
+    try {
+      return JSON.parse(str)
+    } catch (e) {
+      return str
+    }
+  }
   else {
     return str
   }
 }
 
+
+var toString = Object.prototype.toString
 var isArray = typeof Array.isArray === 'function' ? Array.isArray : function(obj) {
-  return Object.prototype.toString.call(obj) === '[object Array]'
+  return toString.call(obj) === '[object Array]'
+}
+
+var isObject = function(obj) {
+  return toString.call(obj) === '[object Object]'
 }
 
 /*
@@ -105,6 +120,9 @@ function _addClass(el, cls) {
 }
 
 
+/*
+ * poor man's querySelectorAll implemented by @ziyunfei
+ */
 function _querySelectorAll(selector, context) {
   return _findMatchingElements(selector, context)
 }
@@ -439,12 +457,31 @@ yenFn.prev = function(selector) {
 }
 
 yenFn.is = function(selector) {
-  for (var i = 0, len = this.length; i < len; i++) {
-    if (typeof selector === 'string') {
-      if (_matchesCommaSelectorList(this[i], selector, this.context)) return true
-    } else {
-      if (this[i] === selector) return true
+  var fn
+
+  if (typeof selector === 'string') {
+    fn = function(index, el, context) {
+      return _matchesCommaSelectorList(el, selector, context)
     }
+  }
+  else if (typeof selector === 'function') {
+    fn = selector
+  }
+  else if (selector.length) {
+    fn = function(index, el) {
+      for (var j = 0, length = selector.length; j < length; j++) {
+        if (selector[j] === el) return true
+      }
+    }
+  }
+  else {
+    fn = function(index, el) {
+      return el === selector
+    }
+  }
+
+  for (var i = 0, len = this.length; i < len; i++) {
+    if (fn(i, this[i], this.context)) return true
   }
 
   return false
@@ -563,24 +600,44 @@ yenFn.val = function(value) {
 }
 
 /*
- * Whether or not to use Element@dataset?
+ * Whether or not to use Element@dataset? https://github.com/erzu/yen/issues/22
  *
  * 2015-06-08 @dotnil
  * In IE6, if we set data attribute with non-string value and retrieve it later
  * via getAttribute('data-foo'), it will return the original non-string value.
- * This will cause the cast process fail.
+ * This will cause the cast process fail. So if the return value is not string,
+ * let's just skip the cast process.
  */
+var hasDataset = !!(doc.body && doc.body.dataset)
 yenFn.data = function(attr, value) {
-  if (typeof value === 'undefined') {
-    if (this.length > 0) {
-      var val = this[0].getAttribute('data-' + attr)
-      return val === null ? undefined : (typeof val === 'string' ? cast(val) : val)
+  if (typeof value !== 'undefined') {
+    var valueString = isObject(value) || isArray(value)
+      ? JSON.stringify(value)
+      : '' + value
+
+    return this.each(function(el) {
+      if (hasDataset) {
+        el.dataset[camelize(attr)] = valueString
+      } else {
+        el.setAttribute('data-' + attr, valueString)
+      }
+    })
+  }
+  else if (isObject(attr)) {
+    for (var prop in attr) {
+      this.data(prop, attr[prop])
     }
+    return this
   }
   else {
-    return this.each(function(el) {
-      el.setAttribute('data-' + attr, value)
-    })
+    if (this.length > 0) {
+      var firstEl = this[0]
+      var val = hasDataset
+        ? firstEl.dataset[camelize(attr)]
+        : firstEl.getAttribute('data-' + attr)
+
+      return val === null ? undefined : (typeof val === 'string' ? cast(val) : val)
+    }
   }
 }
 

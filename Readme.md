@@ -19,6 +19,18 @@
 $ npm install yen --save
 ```
 
+如果你的网站需要支持 IE[6-8]，请在你的页面中加入如下条件注释：
+
+```html
+<!--[if lte IE 9]><!-->
+<script src="http://amo.alicdn.com/L1/377/101010/assets/es5-7dfe7fb63d161c704e2f35874957b921.js"></script>
+<script src="http://amo.alicdn.com/L1/377/101010/assets/json2-0caa31693309e1d7afbb55b0b2b0410e.js"></script>
+<!--<![endif]-->
+```
+
+这两段 JS 分别提供了基本的 es5 垫片和 JSON 支持，两者在 yen 里都有用到。json2.js 来自
+<https://github.com/douglascrockford/JSON-js>
+
 
 ### Node.js
 
