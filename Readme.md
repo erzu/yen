@@ -23,8 +23,8 @@ $ npm install yen --save
 
 ```html
 <!--[if lte IE 9]><!-->
-<script src="http://amo.alicdn.com/L1/377/101010/assets/es5-7dfe7fb63d161c704e2f35874957b921.js"></script>
-<script src="http://amo.alicdn.com/L1/377/101010/assets/json2-0caa31693309e1d7afbb55b0b2b0410e.js"></script>
+<script src="http://amo.alicdn.com/L1/377/10010/assets/es5-7dfe7fb63d161c704e2f35874957b921.js"></script>
+<script src="http://amo.alicdn.com/L1/377/10010/assets/json2-0caa31693309e1d7afbb55b0b2b0410e.js"></script>
 <!--<![endif]-->
 ```
 
