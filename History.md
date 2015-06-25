@@ -1,3 +1,11 @@
+1.2.1 / 2015-06-25
+==================
+
+ * Fixed an old bug in cast() caught by @ziyunfei
+ * Fixed es5 and json2 url
+ * Fixed #22 `.data({})`
+ * Fixed #23 `.is(selection)`
+
 1.2.0 / 2015-06-23
 ==================
 
