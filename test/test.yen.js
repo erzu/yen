@@ -232,6 +232,15 @@ describe('yen', function() {
     it('can comma-separated selector', function() {
       expect($('ul,li,#e', $('#ul')[0]).length).to.be(6)
     })
+
+    it('can select <object> in firefox', function() {
+      $('#fixture').html(heredoc(function() {/*
+        <object></object>
+      */}))
+
+      expect($('object').length).to.be(1)
+      expect($(document.getElementsByTagName('object')[0]).length).to.be(1)
+    })
   })
 
 
@@ -354,6 +363,19 @@ describe('yen', function() {
       expect($('body').is(':last-child')).to.be(true)
       expect($('body').is('div')).to.be(false)
       expect($('script,div').is('div')).to.be(true)
+
+      var body = document.getElementsByTagName('body')[0]
+      expect($(document).is(document)).to.be(true)
+      expect($(body).is([document, body])).to.be(true)
+      expect($('#fixture').is(document.getElementsByTagName('div'))).to.be(true)
+
+      expect($('body,script,head').is(function(index, el) {
+        return el === body
+      })).to.be(true)
+
+      expect($('body').is(function(index, el) {
+        return el === document
+      })).to.be(false)
     })
 
     it('can createElement', function() {
@@ -363,15 +385,6 @@ describe('yen', function() {
   })
 
   describe('miscellaneous', function() {
-    it('can select <object> in firefox', function() {
-      $('#fixture').html(heredoc(function() {/*
-        <object></object>
-      */}))
-
-      expect($('object').length).to.be(1)
-      expect($(document.getElementsByTagName('object')[0]).length).to.be(1)
-    })
-
     it('.data', function() {
       var el = $('#fixture').html(heredoc(function() {/*
         <div data-bar="g+" data-baz="true"></div>
@@ -388,9 +401,23 @@ describe('yen', function() {
       expect(el.data('foo', true)).to.be(el)
       expect(el.data('foo')).to.be(true)
 
+      expect(el.data('qux', 'true story').data('qux')).to.equal('true story')
+
+      expect(el.data('foo-bar')).to.be(undefined)
+
+      el.data('foo-bar', { foo: { bar: 1 } })
+      expect(el.data('foo-bar').foo.bar).to.be(1)
+
+      el.data('foo-bar', { foo: [1, 2, 3] })
+      expect(el.data('foo-bar').foo).to.eql([1, 2, 3])
+
+      el.data({ foo: false, bar: 'great' })
+      expect(el.data('foo')).to.equal(false)
+      expect(el.data('bar')).to.equal('great')
+
       // shall not return the selection itself when getting data value of an
       // empty selection. #8
-      expect($([]).data('foo')).to.be(undefined)
+      expect($().data('foo')).to.be(undefined)
     })
   })
 
@@ -416,6 +443,8 @@ describe('yen', function() {
   })
 
   describe('iframe', function() {
+    var contentDocument
+
     before(function() {
       $('#fixture').html(heredoc(function() {/*
         <div id="division" class="outer">
@@ -423,8 +452,11 @@ describe('yen', function() {
         </div>
         <iframe id="aFrame"></iframe>
       */}))
-      var iDoc = document.getElementById('aFrame').contentDocument || document.getElementById('aFrame').contentWindow.document
-      iDoc.write(heredoc(function() {/*
+
+      contentDocument = document.getElementById('aFrame').contentDocument ||
+        document.getElementById('aFrame').contentWindow.document
+
+      contentDocument.write(heredoc(function() {/*
         <html>
           <body>
             <div id="division" class="inner">
@@ -442,15 +474,13 @@ describe('yen', function() {
     })
 
     it('can select by context', function() {
-      var iDoc = document.getElementById('aFrame').contentDocument || document.getElementById('aFrame').contentWindow.document
-      expect($('#title', iDoc)[0].nodeName.toLowerCase()).to.be('h2')
-      expect($('.title', iDoc)[0].nodeName.toLowerCase()).to.be('h2')
+      expect($('#title', contentDocument)[0].nodeName.toLowerCase()).to.be('h2')
+      expect($('.title', contentDocument)[0].nodeName.toLowerCase()).to.be('h2')
     })
 
     it('will check context ownerDocument when select by id', function() {
-      var iDoc = document.getElementById('aFrame').contentDocument || document.getElementById('aFrame').contentWindow.document
       var outer = $('.outer')
-      var inner = $('.inner', iDoc)
+      var inner = $('.inner', contentDocument)
 
       expect($('#title', outer).length).to.be(1)
       expect($('#title', inner).length).to.be(1)
