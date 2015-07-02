@@ -76,6 +76,8 @@ describe('yen', function() {
 
     it('.hasClass', function() {
       expect($('.entry').last().hasClass('entry-last')).to.be(true)
+      expect($('.entry').hasClass('entry-last')).to.be(false)
+      expect($().hasClass('foo')).to.be(false)
     })
 
     it('.addClass', function() {
@@ -203,7 +205,7 @@ describe('yen', function() {
       expect($('.entry-current').length).to.be(1)
     })
 
-    it('can descendant selector', function() {
+    it('can query descendant selector', function() {
       expect($('ul .entry').length).to.be(5)
       expect($('#ul .entry-current').length).to.be(1)
       expect($('#ul .a').length).to.be(1)
@@ -215,21 +217,21 @@ describe('yen', function() {
       expect($('html #ul [attr=""]').length).to.be(1)
     })
 
-    it('can combine selector', function() {
+    it('can query combine selector', function() {
       expect($('ul a.b[c=d]#e.f[g]').length).to.be(1)
     })
 
-    it('can child selector', function() {
+    it('can query child selector', function() {
       expect($('ul>li', $('#ul')[0]).length).to.be(5)
       expect($('ul > li > a', $('#ul')[0]).length).to.be(2)
     })
 
-    it('can pseudo-class selector', function() {
+    it('can query pseudo-class selector', function() {
       expect($('ul li:first-child', $('#ul')[0]).length).to.be(1)
       expect($('ul :first-child', $('#ul')[0]).length).to.be(3)
     })
 
-    it('can comma-separated selector', function() {
+    it('can query comma-separated selector', function() {
       expect($('ul,li,#e', $('#ul')[0]).length).to.be(6)
     })
 
@@ -334,11 +336,13 @@ describe('yen', function() {
     it('.next', function() {
       expect($('#fixture .egg').next().length).to.be(0)
       expect($('#fixture .foo').next().hasClass('bar')).to.be(true)
+      expect($('#fixture li:first-child').next().length).to.be(2)
     })
 
     it('.prev', function() {
       expect($('#fixture .foo').prev().length).to.be(0)
       expect($('#fixture .bar').prev().hasClass('foo')).to.be(true)
+      expect($('#fixture li:last-child').prev().length).to.be(2)
     })
   })
 
@@ -440,6 +444,22 @@ describe('yen', function() {
       expect($(a)[0]).to.equal(document)
       expect($(a)).to.not.equal(a)    // should return a clone
     })
+
+    it('accept HTMLCollection', function() {
+      var collection = document.getElementsByTagName('script')
+
+      expect($(collection).length).to.equal(collection.length)
+      if (document.scripts) {
+        expect($(document.scripts).length).to.equal(collection.length)
+      }
+    })
+
+    it('accept NodeList', function() {
+      if (document.querySelectorAll) {
+        var collection = document.querySelectorAll('script')
+        expect($(collection).length).to.equal(collection.length)
+      }
+    })
   })
 
   describe('iframe', function() {
@@ -486,6 +506,17 @@ describe('yen', function() {
       expect($('#title', inner).length).to.be(1)
       expect($('#title', outer)[0].nodeName.toLowerCase()).to.be('h1')
       expect($('#title', inner)[0].nodeName.toLowerCase()).to.be('h2')
+    })
+
+    it('can construct with elements within iframe', function() {
+      var el = $('#title', contentDocument)[0]
+
+      expect($(el).context).to.equal(el)
+      expect($(el).closest('div').is('.inner')).to.be(true)
+
+      var els = $(contentDocument.getElementsByTagName('div'))
+      expect(els.length).to.equal(1)
+      expect(els.context).to.equal(els)
     })
   })
 })

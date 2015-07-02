@@ -97,6 +97,48 @@ return {
 的父节点。
 
 
+### 有关 `.each()` and `.map()`
+
+在 jQuery 里，`.each()` 和 `.map()` 在调用传入的回调函数时，会动态改变这个函数的 this，
+变为当前迭代的节点：
+
+```js
+$('div').each(function(index, el) {
+  expect(this === el).to.be(true)
+})
+
+$('div').map(function(index, el) {
+  expect(this === el).to.be(true)
+})
+```
+
+在 yen 里，`.each()` 和 `.map()` 的行为和 `Array.prototype` 上的一致（其实就是直接用了
+数组原型链上的这两个方法）：
+
+```js
+$('div').each(function(el, index) {
+  expect(this === window).to.be(true)
+})
+
+$('div').map(function(el, index) {
+  expect(this === window).to.be(true)
+})
+
+// 还有 .forEach()，和 .each() 的区别是 .forEach 没有返回值
+$('div').forEach(function(el, index) {
+  expect(this === window).to.be(true)
+})
+```
+
+总结一下，yen 里的 `.each()` 和 `.map()` 和 jQuery 的区别在于：
+
+1. jQuery 是 `function(index, el) {}`，而 yen 则是 `function(el, index) {}`
+2. 不会动态绑定 `this`，和 `Array.prototype` 上的一样，默认指向全局，但可以传入第二个
+   参数指定 `context`。
+
+但是我相信你会用得更加顺手。
+
+
 ## Tests - 测试
 
 我们使用 [oceanifier][oceanifier] 运行 HTTP 服务，默认端口 5000。

@@ -341,10 +341,18 @@ function _uniq(arr) {
 
 
 /*
- * Array-like object constructor
+ * Array-like object constructor. Supports parameters like:
+ *
+ * 1. CSS selectors, such as `#foo`, `.bar`, `.baz div`.
+ * 2. Vanilla elements, such as document.head, document.body.
+ * 3. YSet instances, or as jQuery calles its instances, selections.
+ * 4. Array-like objects and Array, such as HTMLCollection, NodeList, and [].
+ * 5. Objects.
+ *
  *
  * References:
  * - https://github.com/jquery/jquery/blob/15a609f7663c4348ab7f1acbc9e566ec20bb717c/src/core/init.js
+ * - https://developer.mozilla.org/en-US/docs/Web/API/Window/length
  */
 
 var RE_HTML = /^<(\w+)\s*\/?>(?:<\/\1>|)$/
@@ -362,6 +370,7 @@ function YSet(selector, context) {
   }
   else if (selector.nodeType) {
     nodes = [selector]
+    context = selector
   }
   else if (typeof selector === 'string') {
     var m = selector.match(RE_HTML)
@@ -381,9 +390,15 @@ function YSet(selector, context) {
   }
   else if (selector instanceof YSet) {
     nodes = selector
+    context = selector.context
   }
-  else if (selector) {
-    nodes = isArray(selector) ? _uniq(selector) : [selector]
+  else if (typeof selector.length === 'number' &&
+           selector.self !== selector && !selector.document) {
+    nodes = selector
+    context = this
+  }
+  else {
+    nodes = [selector]
   }
 
   var len = nodes.length
@@ -427,41 +442,48 @@ yenFn.find = function(selector) {
 }
 
 yenFn.next = function(selector) {
-  var node = this[0]
-  var candidate
+  var candidates = []
 
-  while (node && (node = node.nextSibling)) {
-    if (node.nodeType === Node.ELEMENT_NODE &&
-        (!selector || _matchesCommaSelectorList(node, selector, this.context))) {
-      candidate = node
-      break
+  this.each(function(el) {
+    var context = el.ownerDocument
+
+    while (el && (el = el.nextSibling)) {
+      if (el.nodeType === Node.ELEMENT_NODE &&
+          (!selector || _matchesCommaSelectorList(el, selector, context))) {
+        candidates.push(el)
+        return
+      }
     }
-  }
+  })
 
-  return new YSet(candidate)
+
+  return new YSet(_uniq(candidates))
 }
 
 yenFn.prev = function(selector) {
-  var node = this[0]
-  var candidate
+  var candidates = []
 
-  while (node && (node = node.previousSibling)) {
-    if (node.nodeType === Node.ELEMENT_NODE &&
-        (!selector || _matchesCommaSelectorList(node, selector, this.context))) {
-      candidate = node
-      break
+  this.each(function(el) {
+    var context = el.ownerDocument
+
+    while (el && (el = el.previousSibling)) {
+      if (el.nodeType === Node.ELEMENT_NODE &&
+          (!selector || _matchesCommaSelectorList(el, selector, context))) {
+        candidates.push(el)
+        return
+      }
     }
-  }
+  })
 
-  return new YSet(candidate)
+  return new YSet(_uniq(candidates))
 }
 
 yenFn.is = function(selector) {
   var fn
 
   if (typeof selector === 'string') {
-    fn = function(index, el, context) {
-      return _matchesCommaSelectorList(el, selector, context)
+    fn = function(index, el) {
+      return _matchesCommaSelectorList(el, selector, el.ownerDocument)
     }
   }
   else if (typeof selector === 'function') {
@@ -481,11 +503,13 @@ yenFn.is = function(selector) {
   }
 
   for (var i = 0, len = this.length; i < len; i++) {
-    if (fn(i, this[i], this.context)) return true
+    var element = this[i]
+    if (fn.call(element, i, element)) return true
   }
 
   return false
 }
+
 
 /*
  * Incompatible with jQuery.fn.each on purpose.
@@ -494,16 +518,30 @@ yenFn.is = function(selector) {
  * - http://api.jquery.com/each/
  * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
  */
-yenFn.each = function(fn) {
-  this.forEach(fn, this)
+var arrayFn = Array.prototype
+
+yenFn.each = function(fn, context) {
+  this.forEach(fn, context)
   return this
 }
-yenFn.forEach = Array.prototype.forEach
-yenFn.map = Array.prototype.map
+
+yenFn.forEach = arrayFn.forEach
+yenFn.map = arrayFn.map
+yenFn.some = arrayFn.some
+yenFn.every = arrayFn.every
 
 
+/*
+ * Manipulating class
+ */
 yenFn.hasClass = function(cls) {
-  return _hasClass(this[0], cls)
+  if (this.length) {
+    return this.every(function(el) {
+      return _hasClass(el, cls)
+    })
+  } else {
+    return false
+  }
 }
 
 yenFn.addClass = function(cls) {
@@ -667,9 +705,9 @@ yenFn.children = function(selector) {
     }
   }
 
-  return selector
-    ? new YSet(candidates).filter(selector)
-    : new YSet(candidates)
+  var els = new YSet(_uniq(candidates))
+
+  return selector ? els.filter(selector) : els
 }
 
 yenFn.parent = function(selector) {
@@ -681,9 +719,9 @@ yenFn.parent = function(selector) {
     if ((el = el.parentNode)) candidates.push(el)
   }
 
-  return selector
-    ? new YSet(candidates).filter(selector)
-    : new YSet(candidates)
+  var els = new YSet(_uniq(candidates))
+
+  return selector ? els.filter(selector) : els
 }
 
 yenFn.parents = function(selector) {
@@ -697,9 +735,9 @@ yenFn.parents = function(selector) {
     }
   }
 
-  return selector
-    ? new YSet(candidates).filter(selector)
-    : new YSet(candidates)
+  var els = new YSet(_uniq(candidates))
+
+  return selector ? els.filter(selector) : els
 }
 
 
@@ -725,7 +763,7 @@ yenFn.closest = function(selector) {
       var el = this[i]
 
       while (el) {
-        if (_matchesCommaSelectorList(el, selector, this.context)) {
+        if (_matchesCommaSelectorList(el, selector, el.ownerDocument)) {
           candidates.push(el)
           break
         }
@@ -734,7 +772,7 @@ yenFn.closest = function(selector) {
     }
   }
 
-  return new YSet(candidates)
+  return new YSet(_uniq(candidates))
 }
 
 
@@ -746,33 +784,35 @@ yenFn.filter = function(selector) {
     // nothing to do
   }
   else if (typeof selector === 'string') {
-    filter = function(index) {
-      return _matchesCommaSelectorList(this[index], selector, this.context)
+    filter = function(index, el) {
+      return _matchesCommaSelectorList(el, selector, el.ownerDocument)
     }
   }
   else if (selector instanceof YSet) {
-    filter = function(index) {
-      return selector.is(this[index])
+    filter = function(index, el) {
+      return selector.is(el)
     }
   }
   else if (isArray(selector)) {
-    filter = function(index) {
-      return selector.indexOf(this[index]) >= 0
+    filter = function(index, el) {
+      return selector.indexOf(el) >= 0
     }
   }
   else if (typeof selector === 'function') {
     filter = selector
   }
   else if (selector.nodeType === Node.ELEMENT_NODE) {
-    filter = function(index) {
-      return this[index] === selector
+    filter = function(index, el) {
+      return el === selector
     }
   }
 
   if (filter) {
     for (var i = 0, len = this.length; i < len; i++) {
-      if (filter.call(this, i)) {
-        candidates.push(this[i])
+      var element = this[i]
+
+      if (filter.call(element, i, element)) {
+        candidates.push(element)
       }
     }
   }
@@ -804,7 +844,7 @@ yenFn.hide = function() {
  * e.g. element.style.display === 'none'.
  */
 ; ['height', 'width'].forEach(function(dimension) {
-  var Pair = dimension === 'height' ? ['Top', 'Bottom'] : ['Left', 'Right']
+  var sides = dimension === 'height' ? ['Top', 'Bottom'] : ['Left', 'Right']
   var Dimension = capitalize(dimension)
 
   function toInteger(str) {
@@ -818,7 +858,7 @@ yenFn.hide = function() {
 
   yenFn['inner' + Dimension] = function() {
     var self = this
-    return this[dimension]() + Pair.reduce(function(total, prop) {
+    return this[dimension]() + sides.reduce(function(total, prop) {
         return total + toInteger(self.css('padding' + prop))
       }, 0)
   }
@@ -827,12 +867,12 @@ yenFn.hide = function() {
     var self = this
     var result = this['inner' + Dimension]()
 
-    result += Pair.reduce(function(total, prop) {
+    result += sides.reduce(function(total, prop) {
       return total + toInteger(self.css('border' + prop + 'Width'))
     }, 0)
 
     if (includeMargin) {
-      result += Pair.reduce(function(total, prop) {
+      result += sides.reduce(function(total, prop) {
         return total + toInteger(self.css('margin' + prop))
       }, 0)
     }
