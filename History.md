@@ -1,3 +1,12 @@
+1.2.2 / 2015-07-02
+==================
+
+ * Found an edge case in IE8, see readme for more information.
+ * Make sure the context passed around is correct. 
+ * Fixes #25
+ * Closes #22, let the incompatibility be.
+
+
 1.2.1 / 2015-06-25
 ==================
 
