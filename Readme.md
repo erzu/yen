@@ -66,7 +66,7 @@ TODO
 浏览器更迭，这些坑可能在不久的将来会成为历史，暂且统一列在这里。
 
 
-### .hasAttr('id')
+### `.hasAttr('id')`
 
 在 IE 6 和 7 里执行 `.getAttribute('id')` 返回的会是一个空字符串，而不是规范的 null，
 会导致 yen.fn.hasAttr 所采用的兼容方式判断失败，详见 #5。
@@ -74,12 +74,12 @@ TODO
 @luckydrq 是第一个踩到这个坑的人。
 
 
-### .css('margin')
+### `.css('margin')`
 
 在 Firefox 与 Safari 5 里执行 `.css('margin')` 并不会返回缩写的 margin 值，而是返回空。
 
 
-### .position()
+### `.position()`
 
 [jQuery.fn.position()][jQuery#position] 返回的 `top` 与 `left` 会去掉节点的
 marginTop 和 marginLeft，而 Element#offsetLeft 和 Element#offsetTop 是会把节点的
@@ -95,6 +95,19 @@ return {
 
 不过，这个返回值[在 IE[67] 里是有问题的][cssom#offsetLeft]，会无视 `position: relative`
 的父节点。
+
+
+### IE8 里的 `.querySelectorAll()`
+
+IE8 里的 `.querySelectorAll()` 功能有所残缺，仅支持 [CSS 2.1][css-2.1] 标准中所列的
+选择器，部分支持 [CSS 3][css-3] 标准里的选择器。
+
+目前踩到的有：
+
+```js
+document.querySelectorAll('#fixture li:last-child')     // 参数无效
+document.getElementById('fixture').querySelectorAll('li:last-child')    // 没问题
+```
 
 
 ### 有关 `.each()` and `.map()`
@@ -182,3 +195,5 @@ $ npm test
 [oceanifier]: https://github.com/erzu/oceanifier
 [jQuery#position]: http://api.jquery.com/position/
 [1]: http://cyj.me/f2e/2015/05/25/yen/
+[css-2.1]: http://caniuse.com/#feat=css-sel2
+[css-3]: http://caniuse.com/#feat=css-sel3

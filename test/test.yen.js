@@ -342,7 +342,9 @@ describe('yen', function() {
     it('.prev', function() {
       expect($('#fixture .foo').prev().length).to.be(0)
       expect($('#fixture .bar').prev().hasClass('foo')).to.be(true)
-      expect($('#fixture li:last-child').prev().length).to.be(2)
+      // IE8 does has got `document.querySelectorAll` but will yield error on
+      // `document.querySelectorAll('#fixture li:last-child')`.
+      expect($('#fixture').find('li:last-child').prev().length).to.be(2)
     })
   })
 
