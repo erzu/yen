@@ -66,7 +66,7 @@ TODO
 浏览器更迭，这些坑可能在不久的将来会成为历史，暂且统一列在这里。
 
 
-### .hasAttr('id')
+### `.hasAttr('id')`
 
 在 IE 6 和 7 里执行 `.getAttribute('id')` 返回的会是一个空字符串，而不是规范的 null，
 会导致 yen.fn.hasAttr 所采用的兼容方式判断失败，详见 #5。
@@ -74,12 +74,12 @@ TODO
 @luckydrq 是第一个踩到这个坑的人。
 
 
-### .css('margin')
+### `.css('margin')`
 
 在 Firefox 与 Safari 5 里执行 `.css('margin')` 并不会返回缩写的 margin 值，而是返回空。
 
 
-### .position()
+### `.position()`
 
 [jQuery.fn.position()][jQuery#position] 返回的 `top` 与 `left` 会去掉节点的
 marginTop 和 marginLeft，而 Element#offsetLeft 和 Element#offsetTop 是会把节点的
@@ -95,6 +95,61 @@ return {
 
 不过，这个返回值[在 IE[67] 里是有问题的][cssom#offsetLeft]，会无视 `position: relative`
 的父节点。
+
+
+### IE8 里的 `.querySelectorAll()`
+
+IE8 里的 `.querySelectorAll()` 功能有所残缺，仅支持 [CSS 2.1][css-2.1] 标准中所列的
+选择器，部分支持 [CSS 3][css-3] 标准里的选择器。
+
+目前踩到的有：
+
+```js
+document.querySelectorAll('#fixture li:last-child')     // 参数无效
+document.getElementById('fixture').querySelectorAll('li:last-child')    // 没问题
+```
+
+
+### 有关 `.each()` and `.map()`
+
+在 jQuery 里，`.each()` 和 `.map()` 在调用传入的回调函数时，会动态改变这个函数的 this，
+变为当前迭代的节点：
+
+```js
+$('div').each(function(index, el) {
+  expect(this === el).to.be(true)
+})
+
+$('div').map(function(index, el) {
+  expect(this === el).to.be(true)
+})
+```
+
+在 yen 里，`.each()` 和 `.map()` 的行为和 `Array.prototype` 上的一致（其实就是直接用了
+数组原型链上的这两个方法）：
+
+```js
+$('div').each(function(el, index) {
+  expect(this === window).to.be(true)
+})
+
+$('div').map(function(el, index) {
+  expect(this === window).to.be(true)
+})
+
+// 还有 .forEach()，和 .each() 的区别是 .forEach 没有返回值
+$('div').forEach(function(el, index) {
+  expect(this === window).to.be(true)
+})
+```
+
+总结一下，yen 里的 `.each()` 和 `.map()` 和 jQuery 的区别在于：
+
+1. jQuery 是 `function(index, el) {}`，而 yen 则是 `function(el, index) {}`
+2. 不会动态绑定 `this`，和 `Array.prototype` 上的一样，默认指向全局，但可以传入第二个
+   参数指定 `context`。
+
+但是我相信你会用得更加顺手。
 
 
 ## Tests - 测试
@@ -140,3 +195,5 @@ $ npm test
 [oceanifier]: https://github.com/erzu/oceanifier
 [jQuery#position]: http://api.jquery.com/position/
 [1]: http://cyj.me/f2e/2015/05/25/yen/
+[css-2.1]: http://caniuse.com/#feat=css-sel2
+[css-3]: http://caniuse.com/#feat=css-sel3
