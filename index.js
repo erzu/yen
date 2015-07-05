@@ -428,6 +428,30 @@ function _emptyEl(el){
 }
 
 
+function _matcher(selector) {
+  if (typeof selector === 'string') {
+    return function(el) {
+      return _matchesCommaSelectorList(el, selector, el.ownerDocument)
+    }
+  }
+  else if (typeof selector === 'function') {
+    return selector
+  }
+  else if (typeof selector.length === 'number') {
+    return function(el) {
+      for (var j = 0, length = selector.length; j < length; j++) {
+        if (selector[j] === el) return true
+      }
+    }
+  }
+  else {
+    return function(el) {
+      return el === selector
+    }
+  }
+}
+
+
 var yen = YSet
 var yenFn = yen.fn = YSet.prototype
 
@@ -441,70 +465,45 @@ yenFn.find = function(selector) {
   return new YSet(candidates)
 }
 
+
 yenFn.next = function(selector) {
   var candidates = []
 
   this.each(function(el) {
-    var context = el.ownerDocument
-
     while (el && (el = el.nextSibling)) {
-      if (el.nodeType === Node.ELEMENT_NODE &&
-          (!selector || _matchesCommaSelectorList(el, selector, context))) {
+      if (el.nodeType === Node.ELEMENT_NODE) {
         candidates.push(el)
         return
       }
     }
   })
 
-
-  return new YSet(_uniq(candidates))
+  var els = new YSet(_uniq(candidates))
+  return selector ? els.filter(selector) : els
 }
 
 yenFn.prev = function(selector) {
   var candidates = []
 
   this.each(function(el) {
-    var context = el.ownerDocument
-
     while (el && (el = el.previousSibling)) {
-      if (el.nodeType === Node.ELEMENT_NODE &&
-          (!selector || _matchesCommaSelectorList(el, selector, context))) {
+      if (el.nodeType === Node.ELEMENT_NODE) {
         candidates.push(el)
         return
       }
     }
   })
 
-  return new YSet(_uniq(candidates))
+  var els = new YSet(_uniq(candidates))
+  return selector ? els.filter(selector) : els
 }
 
 yenFn.is = function(selector) {
-  var fn
-
-  if (typeof selector === 'string') {
-    fn = function(index, el) {
-      return _matchesCommaSelectorList(el, selector, el.ownerDocument)
-    }
-  }
-  else if (typeof selector === 'function') {
-    fn = selector
-  }
-  else if (selector.length) {
-    fn = function(index, el) {
-      for (var j = 0, length = selector.length; j < length; j++) {
-        if (selector[j] === el) return true
-      }
-    }
-  }
-  else {
-    fn = function(index, el) {
-      return el === selector
-    }
-  }
+  var fn = _matcher(selector)
 
   for (var i = 0, len = this.length; i < len; i++) {
-    var element = this[i]
-    if (fn.call(element, i, element)) return true
+    var el = this[i]
+    if (fn(el, i)) return true
   }
 
   return false
@@ -706,7 +705,6 @@ yenFn.children = function(selector) {
   }
 
   var els = new YSet(_uniq(candidates))
-
   return selector ? els.filter(selector) : els
 }
 
@@ -720,7 +718,6 @@ yenFn.parent = function(selector) {
   }
 
   var els = new YSet(_uniq(candidates))
-
   return selector ? els.filter(selector) : els
 }
 
@@ -730,13 +727,13 @@ yenFn.parents = function(selector) {
   for (var i = 0, len = this.length; i < len; i++) {
     var el = this[i]
 
-    while ((el = el.parentNode)) {
+    // the root node, document, shall be omitted. see #27 for more information.
+    while ((el = el.parentNode) && el.parentNode) {
       candidates.push(el)
     }
   }
 
   var els = new YSet(_uniq(candidates))
-
   return selector ? els.filter(selector) : els
 }
 
@@ -748,28 +745,24 @@ yenFn.closest = function(selector) {
   if (!selector) {
     // nothing to do
   }
-  else if (hasClosest) {
+  else if (hasClosest && typeof selector === 'string') {
     this.each(function(_el) {
       var closest = _el.closest(selector)
       if (closest) candidates.push(closest)
     })
   }
   else {
-    // can't switch to `this.each` yet. The es5 shim we wrote didn't take the
-    // 2nd parameter of forEach into consideration.
-    //
-    // Will switch after that was fixed.
-    for (var i = 0, len = this.length; i < len; i++) {
-      var el = this[i]
+    var matches = _matcher(selector)
 
+    this.each(function(el, i) {
       while (el) {
-        if (_matchesCommaSelectorList(el, selector, el.ownerDocument)) {
+        if (matches(el, i)) {
           candidates.push(el)
-          break
+          return
         }
         el = el.parentNode
       }
-    }
+    })
   }
 
   return new YSet(_uniq(candidates))
@@ -778,43 +771,15 @@ yenFn.closest = function(selector) {
 
 yenFn.filter = function(selector) {
   var candidates = []
-  var filter
 
-  if (!selector) {
-    // nothing to do
-  }
-  else if (typeof selector === 'string') {
-    filter = function(index, el) {
-      return _matchesCommaSelectorList(el, selector, el.ownerDocument)
-    }
-  }
-  else if (selector instanceof YSet) {
-    filter = function(index, el) {
-      return selector.is(el)
-    }
-  }
-  else if (isArray(selector)) {
-    filter = function(index, el) {
-      return selector.indexOf(el) >= 0
-    }
-  }
-  else if (typeof selector === 'function') {
-    filter = selector
-  }
-  else if (selector.nodeType === Node.ELEMENT_NODE) {
-    filter = function(index, el) {
-      return el === selector
-    }
-  }
+  if (selector) {
+    var matches = _matcher(selector)
 
-  if (filter) {
-    for (var i = 0, len = this.length; i < len; i++) {
-      var element = this[i]
-
-      if (filter.call(element, i, element)) {
-        candidates.push(element)
+    this.each(function(el, i) {
+      if (matches(el, i)) {
+        candidates.push(el)
       }
-    }
+    })
   }
 
   return new YSet(candidates)
