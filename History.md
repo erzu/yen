@@ -1,3 +1,10 @@
+1.2.3 / 2015-07-06
+==================
+
+ * Fixed #27; omit document when traversing parents.
+ * Refactored `.is(selector)` and related filterable methods
+
+
 1.2.2 / 2015-07-02
 ==================
 

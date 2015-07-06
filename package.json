@@ -1,7 +1,7 @@
 {
   "name": "yen",
   "description": "jQuery inspired DOM selection and manipulation library.",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "repository": {
     "type": "git",
     "url": "git@github.com:erzu/yen.git"
