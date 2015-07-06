@@ -278,6 +278,8 @@ describe('yen', function() {
       // return empty set if there's no parentNode.
       expect($(document).parent()).to.be.a($)
       expect($(document).parent().length).to.be(0)
+
+      expect($('html').parent().is(document)).to.be(true)
     })
 
     it('.parents', function() {
@@ -286,10 +288,11 @@ describe('yen', function() {
       expect(el.parents().length).to.be.greaterThan(1)
 
       expect($(document).parents().length).to.be(0)
+      expect($('html').parents().length).to.be(0)
 
-      // ol -> #fixture -> body -> html -> document
-      // and there are two ol elements. Hence the total is 6.
-      expect($('#fixture li').parents().length).to.be(6)
+      // ol -> #fixture -> body -> html
+      // and there are two ol elements. Hence the total is 5.
+      expect($('#fixture li').parents().length).to.be(5)
     })
 
     it('.closest', function() {
@@ -301,6 +304,9 @@ describe('yen', function() {
       // http://api.jquery.com/closest/ won't yield an error if selector param
       // is missing. Let's just stick with jQuery.
       expect($(document).closest().length).to.be(0)
+
+      // Should traverse up to document
+      expect($('html').closest(document).length).to.be(1)
     })
 
     it('.filter', function() {
@@ -375,11 +381,11 @@ describe('yen', function() {
       expect($(body).is([document, body])).to.be(true)
       expect($('#fixture').is(document.getElementsByTagName('div'))).to.be(true)
 
-      expect($('body,script,head').is(function(index, el) {
+      expect($('body,script,head').is(function(el) {
         return el === body
       })).to.be(true)
 
-      expect($('body').is(function(index, el) {
+      expect($('body').is(function(el) {
         return el === document
       })).to.be(false)
     })
