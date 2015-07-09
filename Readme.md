@@ -6,6 +6,25 @@
 jQuery inspired DOM selection and manipulation library.
 
 
+## Goal
+
+Why not just use jQuery? 
+
+~~Because we can!~~ Because there're certain cases that jQuery might overkill. 
+We are a small team working on internet advertisements. There are cases that 
+require us to limit the total tranfer of the first load be within 50k. 
+
+This might be flame bait, but jQuery isn't that modularized. 
+
+What if I don't fancy a Promise? Not to mention the one in jQuery is crippled. 
+What if I prefer superagent over `jQuery.ajax`?
+
+So with all of those questionable parts stripped out. We've got DOM selection
+and manipulation left. 
+
+That makes Yen.
+
+
 ## Usage
 
 If your project's setup enables using CMD modules directly, you can just install
