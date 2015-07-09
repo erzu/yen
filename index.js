@@ -452,6 +452,15 @@ function _matcher(selector) {
 }
 
 
+/*
+ * Get window object from document
+ * http://james.padolsey.com/jquery/#v=1.10.2&fn=getWindow
+ */
+function _getWindow(el) {
+  return el.nodeType === 9 ? (el.defaultView || el.parentWindow) : false
+}
+
+
 var yen = YSet
 var yenFn = yen.fn = YSet.prototype
 
@@ -818,10 +827,16 @@ yenFn.hide = function() {
   }
 
   yenFn[dimension] = function() {
-    return Math.max(this[0]['offset' + Dimension], toInteger(this.css(dimension)))
+    if (this.length > 0) {
+      return Math.max(this[0]['offset' + Dimension], toInteger(this.css(dimension)))
+    } else {
+      return null
+    }
   }
 
   yenFn['inner' + Dimension] = function() {
+    if (!this.length) return null
+
     var self = this
     return this[dimension]() + sides.reduce(function(total, prop) {
         return total + toInteger(self.css('padding' + prop))
@@ -829,6 +844,8 @@ yenFn.hide = function() {
   }
 
   yenFn['outer' + Dimension] = function(includeMargin) {
+    if (!this.length) return null
+
     var self = this
     var result = this['inner' + Dimension]()
 
@@ -918,23 +935,35 @@ yenFn.position = function() {
   }
 }
 
+
+/*
+ * Get current coordinates of the first element
+ *
+ * References:
+ * - http://james.padolsey.com/jquery/#v=1.10.2&fn=jQuery.fn.offset
+ * - http://www.quirksmode.org/dom/w3c_cssom.html
+ */
 yenFn.offset = function() {
   if (this.length > 0) {
     var el = this[0]
-    var documentEl = el && el.ownerDocument && el.ownerDocument.documentElement
+    var ownerDocument = el && el.ownerDocument
 
-    if (!documentEl) return
+    if (!ownerDocument) return
+
+    var ownerWindow = _getWindow(ownerDocument)
+    var documentEl = ownerDocument.documentElement
 
     var box = typeof el.getBoundingClientRect === 'function'
       ? el.getBoundingClientRect()
       : { top: 0, left: 0 }
 
     return {
-      top: box.top + win.pageYOffset - documentEl.clientTop,
-      left: box.left + win.pageXOffset - documentEl.clientLeft
+      top: box.top + (ownerWindow.pageYOffset || documentEl.scrollTop) - (documentEl.clientTop || 0),
+      left: box.left + (ownerWindow.pageXOffset || documentEl.scrollLeft) - (documentEl.clientLeft || 0)
     }
   }
 }
+
 
 yenFn.empty = function(){
   return this.each(_emptyEl)
