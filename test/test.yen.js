@@ -20,28 +20,42 @@ describe('yen', function() {
 
     it('.height', function() {
       expect($('#fixture').height()).to.equal(50)
+      expect($().height()).to.be(null)
     })
 
     it('.innerHeight', function() {
       expect($('#fixture').innerHeight()).to.equal(70)
+      expect($().innerHeight()).to.be(null)
     })
 
     it('.innerWidth', function() {
       expect($('#fixture').innerWidth()).to.equal(140)
+      expect($().innerWidth()).to.be(null)
+    })
+
+    it('.offset', function() {
+      expect($().offset()).to.be(undefined)
+
+      var offset = $('#fixture').offset()
+      expect(offset.left).to.be.a('number')
+      expect(offset.top).to.be.a('number')
     })
 
     it('.outerHeight', function() {
       expect($('#fixture').outerHeight()).to.equal(80)
       expect($('#fixture').outerHeight(true)).to.equal(100)
+      expect($().outerHeight()).to.be(null)
     })
 
     it('.outerWidth', function() {
       expect($('#fixture').outerWidth()).to.equal(150)
       expect($('#fixture').outerWidth(true)).to.equal(160)
+      expect($().outerWidth()).to.be(null)
     })
 
     it('.width', function() {
       expect($('#fixture').width()).to.equal(100)
+      expect($().width()).to.be(null)
     })
   })
 
