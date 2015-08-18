@@ -821,14 +821,14 @@ yenFn.hide = function() {
   var sides = dimension === 'height' ? ['Top', 'Bottom'] : ['Left', 'Right']
   var Dimension = capitalize(dimension)
 
-  function toInteger(str) {
-    var res = parseInt(str, 10)
+  function toNumber(str) {
+    var res = parseFloat(str)
     return isNaN(res) ? 0 : res
   }
 
   yenFn[dimension] = function() {
     if (this.length > 0) {
-      return Math.max(this[0]['offset' + Dimension], toInteger(this.css(dimension)))
+      return Math.max(this[0]['offset' + Dimension], toNumber(this.css(dimension)))
     } else {
       return null
     }
@@ -839,7 +839,7 @@ yenFn.hide = function() {
 
     var self = this
     return this[dimension]() + sides.reduce(function(total, prop) {
-        return total + toInteger(self.css('padding' + prop))
+        return total + toNumber(self.css('padding' + prop))
       }, 0)
   }
 
@@ -850,12 +850,12 @@ yenFn.hide = function() {
     var result = this['inner' + Dimension]()
 
     result += sides.reduce(function(total, prop) {
-      return total + toInteger(self.css('border' + prop + 'Width'))
+      return total + toNumber(self.css('border' + prop + 'Width'))
     }, 0)
 
     if (includeMargin) {
       result += sides.reduce(function(total, prop) {
-        return total + toInteger(self.css('margin' + prop))
+        return total + toNumber(self.css('margin' + prop))
       }, 0)
     }
 
