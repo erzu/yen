@@ -10,21 +10,10 @@
     <div id="mocha"></div>
     <div id="fixture" style="display:none"></div>
     <script src="/node_modules/mocha/mocha.js"></script>
-    <script src="http://amo.alicdn.com/L1/377/10010/sea.js"></script>
     <!--[if lte IE 9]><!-->
     <script src="http://amo.alicdn.com/L1/377/10010/assets/es5-7dfe7fb63d161c704e2f35874957b921.js"></script>
     <script src="http://amo.alicdn.com/L1/377/10010/assets/json2-0caa31693309e1d7afbb55b0b2b0410e.js"></script>
     <!--<![endif]-->
-    <script src="/config.js"></script>
-    <script>
-      /* eslint-disable */
-      mocha.ui('bdd')
-      seajs.use([
-        'yen/test/test.yen',
-        'yen/test/test.events'
-      ], function() {
-        mocha.run()
-      })
-    </script>
+    <script src="/runner.js"></script>
   </body>
 </html>

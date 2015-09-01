@@ -7,14 +7,14 @@
     "url": "git@github.com:erzu/yen.git"
   },
   "devDependencies": {
-    "oceanifier": "~3.0.0",
+    "oceanifier": "~4.0.0",
     "expect.js": "~0.3.1",
     "heredoc": "~1.2.0",
     "mocha": "~1.20.1",
     "totoro": "~2.0.0"
   },
   "scripts": {
-    "start": "oceanify serve",
+    "start": "ocean serve",
     "test": "totoro --runner=http://`oceanify ip`:5000/test/runner.html"
   },
   "license": "MIT"
