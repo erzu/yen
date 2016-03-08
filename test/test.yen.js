@@ -57,6 +57,27 @@ describe('yen', function() {
       expect($('#fixture').width()).to.equal(100)
       expect($().width()).to.be(null)
     })
+
+    it('img .height', function() {
+      expect($('#img').height()).to.equal(60)
+      expect($().height()).to.be(null)
+    })
+
+    it('img .innerHeight', function() {
+      expect($('#img').innerHeight()).to.equal(60)
+      expect($().innerHeight()).to.be(null)
+    })
+
+    it('img .width', function() {
+      expect($('#img').width()).to.equal(120)
+      expect($().width()).to.be(null)
+    })
+
+    it('img .innerWidth', function() {
+      expect($('#img').innerWidth()).to.equal(120)
+      expect($().innerWidth()).to.be(null)
+    })
+
   })
 
   describe('manipulation', function() {
