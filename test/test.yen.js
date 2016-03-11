@@ -8,76 +8,96 @@ var heredoc = require('heredoc').strip
 describe('yen', function() {
 
   describe('dimension', function() {
-    before(function() {
-      $('#fixture').css({
+    before(function(done) {
+      $('#fixture').html(heredoc(function() {/*
+        <div class="rect"></div>
+        <div class="rect-hidden" style="display:none"></div>
+        <img src="https://img.alicdn.com/tps/TB1vy9CLVXXXXcvXFXXXXXXXXXX-120-60.png" alt="test image" class="img">
+        <img src="https://img.alicdn.com/tps/TB1vy9CLVXXXXcvXFXXXXXXXXXX-120-60.png" alt="test image" class="img-hidden" style="display:none">
+      */}))
+
+      $('#fixture div').css({
         width: '100px',
         height: '50px',
         padding: '10px 20px',
         border: '5px solid #000',
         margin: '10px 5px'
       })
+
+      $('#fixture').show()
+      $('#fixture img').on('load', function() {
+        done()
+      })
+    })
+
+    after(function() {
+      $('#fixture').hide()
     })
 
     it('.height', function() {
-      expect($('#fixture').height()).to.equal(50)
+      expect($('#fixture .rect').height()).to.equal(50)
+      expect($('#fixture .rect-hidden').height()).to.equal(50)
+      expect($('#fixture .img').height()).to.equal(60)
+      expect($('#fixture .img-hidden').height()).to.equal(60)
       expect($().height()).to.be(null)
     })
 
     it('.innerHeight', function() {
-      expect($('#fixture').innerHeight()).to.equal(70)
+      expect($('#fixture .rect').innerHeight()).to.equal(70)
+      expect($('#fixture .rect-hidden').innerHeight()).to.equal(70)
+      expect($('#fixture .img').innerHeight()).to.equal(60)
+      expect($('#fixture .img-hidden').innerHeight()).to.equal(60)
       expect($().innerHeight()).to.be(null)
     })
 
     it('.innerWidth', function() {
-      expect($('#fixture').innerWidth()).to.equal(140)
+      expect($('#fixture .rect').innerWidth()).to.equal(140)
+      expect($('#fixture .rect-hidden').innerWidth()).to.equal(140)
+      expect($('#fixture .img').innerWidth()).to.equal(120)
+      expect($('#fixture .img-hidden').innerWidth()).to.equal(120)
       expect($().innerWidth()).to.be(null)
     })
 
     it('.offset', function() {
       expect($().offset()).to.be(undefined)
 
-      var offset = $('#fixture').offset()
+      var offset = $('#fixture .rect').offset()
       expect(offset.left).to.be.a('number')
       expect(offset.top).to.be.a('number')
     })
 
     it('.outerHeight', function() {
-      expect($('#fixture').outerHeight()).to.equal(80)
-      expect($('#fixture').outerHeight(true)).to.equal(100)
+      expect($('#fixture .rect').outerHeight()).to.equal(80)
+      expect($('#fixture .rect').outerHeight(true)).to.equal(100)
+      expect($('#fixture .rect-hidden').outerHeight()).to.equal(80)
+      expect($('#fixture .rect-hidden').outerHeight(true)).to.equal(100)
+      expect($('#fixture .img').outerHeight()).to.equal(60)
+      expect($('#fixture .img').outerHeight(true)).to.equal(60)
+      expect($('#fixture .img-hidden').outerHeight()).to.equal(60)
+      expect($('#fixture .img-hidden').outerHeight(true)).to.equal(60)
       expect($().outerHeight()).to.be(null)
     })
 
     it('.outerWidth', function() {
-      expect($('#fixture').outerWidth()).to.equal(150)
-      expect($('#fixture').outerWidth(true)).to.equal(160)
+      expect($('#fixture .rect').outerWidth()).to.equal(150)
+      expect($('#fixture .rect').outerWidth(true)).to.equal(160)
+      expect($('#fixture .rect-hidden').outerWidth()).to.equal(150)
+      expect($('#fixture .rect-hidden').outerWidth(true)).to.equal(160)
+      expect($('#fixture .img').outerWidth()).to.equal(120)
+      expect($('#fixture .img').outerWidth(true)).to.equal(120)
+      expect($('#fixture .img-hidden').outerHeight()).to.equal(60)
+      expect($('#fixture .img-hidden').outerHeight(true)).to.equal(60)
+
       expect($().outerWidth()).to.be(null)
     })
 
     it('.width', function() {
-      expect($('#fixture').width()).to.equal(100)
+      expect($('#fixture .rect').width()).to.equal(100)
+      expect($('#fixture .rect-hidden').width()).to.equal(100)
+      expect($('#fixture .img').width()).to.equal(120)
+      expect($('#fixture .img-hidden').width()).to.equal(120)
       expect($().width()).to.be(null)
     })
-
-    it('img .height', function() {
-      expect($('#img').height()).to.equal(60)
-      expect($().height()).to.be(null)
-    })
-
-    it('img .innerHeight', function() {
-      expect($('#img').innerHeight()).to.equal(60)
-      expect($().innerHeight()).to.be(null)
-    })
-
-    it('img .width', function() {
-      expect($('#img').width()).to.equal(120)
-      expect($().width()).to.be(null)
-    })
-
-    it('img .innerWidth', function() {
-      expect($('#img').innerWidth()).to.equal(120)
-      expect($().innerWidth()).to.be(null)
-    })
-
   })
 
   describe('manipulation', function() {
@@ -527,8 +547,8 @@ describe('yen', function() {
             </div>
           </body>
         </html>
-      */})
-      )
+      */}))
+      contentDocument.close()
     })
 
     it('can select iFrame window', function() {
