@@ -1,3 +1,14 @@
+
+1.3.0 / 2016-03-11
+==================
+
+  * Fix: make .height(), .innerHeight(), .outerHeight()
+  * Fix: toInteger->toNumber
+  * Doc: goal
+  * Doc: english readme
+  * Upgrade: oceanifier@4.x
+
+
 1.2.4 / 2015-07-09
 ==================
 
