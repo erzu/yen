@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "ocean serve",
-    "test": "totoro --runner=http://`oceanify ip`:5000/test/runner.html"
+    "test": "totoro --runner=http://`ocean ip`:5000/test/runner.html"
   },
   "license": "MIT"
 }

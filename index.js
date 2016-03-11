@@ -54,6 +54,11 @@ function cast(str) {
   }
 }
 
+function toNumber(str) {
+  var res = parseFloat(str)
+  return isNaN(res) ? 0 : res
+}
+
 
 var toString = Object.prototype.toString
 var isArray = typeof Array.isArray === 'function' ? Array.isArray : function(obj) {
@@ -63,6 +68,7 @@ var isArray = typeof Array.isArray === 'function' ? Array.isArray : function(obj
 var isObject = function(obj) {
   return toString.call(obj) === '[object Object]'
 }
+
 
 /*
  * Cannot rename `this` in strict mode. So let's just use window object directly.
@@ -83,7 +89,6 @@ var Node = win.Node || {
 /*
  * Glue methods for compatiblity
  */
-
 function _hasClass(el, cls) {
   if (el.classList) {
     return el.classList.contains(cls)
@@ -289,6 +294,54 @@ function _getLastElementChild(node) {
 }
 
 
+// Stolen from jQuery
+var swap = function( elem, options, callback, args ) {
+  var ret, name,
+    old = {}
+
+  // Remember the old values, and insert the new ones
+  for (name in options) {
+    old[name] = elem.style[name]
+    elem.style[name] = options[name]
+  }
+
+  ret = callback.apply(elem, args || [])
+
+  // Revert the old values
+  for (name in options) {
+    elem.style[name] = old[name]
+  }
+
+  return ret
+}
+
+
+var _cssHooks = {}
+var _cssProps = {}
+var _emptyStyle = doc.createElement('div').style
+var _cssPrefixes = ['Webkit', 'O', 'Moz', 'ms' ]
+
+// return a css property mapped to a potentially vendor prefixed property
+function vendorPropName( name ) {
+
+  // shortcut for names that are not vendor prefixed
+  if (name in _emptyStyle) {
+    return name
+  }
+
+  // check for vendor prefixed names
+  var capName = capitalize(name)
+  var i = _cssPrefixes.length
+
+  while (i--) {
+    name = _cssPrefixes[i] + capName
+    if (name in _emptyStyle) {
+      return name
+    }
+  }
+}
+
+
 /*
  * Legacy IEs don't have window.getComputedStyle. They have got
  * .currentStyle property on DOM elements instead. But the property
@@ -301,21 +354,48 @@ function _getLastElementChild(node) {
  * - http://www.quirksmode.org/dom/getstyles.html
  * - http://ie.microsoft.com/testdrive/HTML5/getComputedStyle/
  */
-function _getStyle(el, prop) {
-  if (win.getComputedStyle) {
-    prop = dasherize(prop)
-    return getComputedStyle(el).getPropertyValue(prop)
+var _getStyles
+
+if (win.getComputedStyle) {
+  _getStyles = function(el) {
+    // Stolen from jQuery source code.
+    // Support: IE<=11+, Firefox<=30+ (#15098, #14150)
+    // IE throws on elements created in popups
+    // FF meanwhile throws on frame elements through "defaultView.getComputedStyle"
+    var view = el.ownerDocument.defaultView
+
+    if ( !view || !view.opener ) {
+      view = window
+    }
+
+    return view.getComputedStyle(el)
   }
-  else if (el.currentStyle) {
-    prop = camelize(prop)
-    return el.currentStyle[prop]
+}
+else if (doc.documentElement.currentStyle) {
+  _getStyles = function(el) {
+    return el.currentStyle
   }
 }
 
-function _regulate(value, prop) {
+function _getStyle(el, name, styles) {
+  var origName = camelize(name)
+  var hooks
+
+  name = _cssProps[origName] || (_cssProps[origName] = vendorPropName(origName) || origName)
+  hooks = _cssHooks[name]
+  styles = styles || _getStyles(el)
+
+  if (hooks && 'get' in hooks) {
+    return hooks.get(el, styles)
+  }
+
+  return styles[name]
+}
+
+function _regulate(value, name) {
   if (!value) return value
 
-  if ('width height top right bottom left'.split(' ').indexOf(prop) >= 0 &&
+  if ('width height top right bottom left'.split(' ').indexOf(name) >= 0 &&
       !/[^-\.\d]/.test(value)) {
     value = value + 'px'
   }
@@ -323,8 +403,12 @@ function _regulate(value, prop) {
   return value
 }
 
-function _setStyle(el, prop, value) {
-  el.style[prop] = _regulate(value, prop)
+function _setStyle(el, name, value) {
+  var origName = camelize(name)
+
+  name = _cssProps[origName] || (_cssProps[origName] = vendorPropName(origName) || origName)
+
+  el.style[name] = _regulate(value, name)
 }
 
 
@@ -338,6 +422,17 @@ function _uniq(arr) {
 
   return result
 }
+
+
+/*
+ * support
+ */
+var support = {}
+
+;(function() {
+  var el = document.createElement('div')
+  support.boxSizing = _getStyle(el, 'box-sizing', el.style) === ''
+})()
 
 
 /*
@@ -817,46 +912,76 @@ yenFn.hide = function() {
  * But current approach will return correct value even if the element is hidden,
  * e.g. element.style.display === 'none'.
  */
-; ['height', 'width'].forEach(function(dimension) {
-  var sides = dimension === 'height' ? ['Top', 'Bottom'] : ['Left', 'Right']
+;['height', 'width'].forEach(function(dimension) {
+  var Sides = dimension === 'height' ? ['Top', 'Bottom'] : ['Left', 'Right']
   var Dimension = capitalize(dimension)
 
-  function toNumber(str) {
-    var res = parseFloat(str)
-    return isNaN(res) ? 0 : res
+  var rdisplayswap = /^(none|table(?!-c[ea]).+)/
+  var cssShow = {
+    position: 'absolute',
+    visibility: 'hidden',
+    display: 'block'
   }
 
-  yenFn[dimension] = function() {
-    if (this.length > 0) {
-      return Math.max(this[0]['offset' + Dimension], toNumber(this.css(dimension)))
-    } else {
-      return null
+  function getOffsetWidthOrHeight(el) {
+    if (rdisplayswap.test(_getStyle(el, 'display')) && el.offsetWidth === 0) {
+      return swap(el, cssShow, function() {
+        return el['offset' + Dimension]
+      })
+    }
+
+    return el['offset' + Dimension]
+  }
+
+  _cssHooks[dimension] = {
+    get: function(el, styles) {
+      if (toNumber(styles[dimension]) > 0) {
+        return styles[dimension]
+      }
+
+      var result = getOffsetWidthOrHeight(el)
+
+      if (!support.boxSizing || _getStyle(el, 'box-sizing') !== 'border-box') {
+        result = Sides.reduce(function(total, Side) {
+          return total - toNumber(_getStyle(el, 'padding' + Side))
+            - toNumber(_getStyle(el, 'border' + Side + 'Width'))
+        }, result)
+      }
+
+      return result + 'px'
     }
   }
 
-  yenFn['inner' + Dimension] = function() {
-    if (!this.length) return null
+  yenFn[dimension] = function() {
+    if (this.length === 0) return null
 
-    var self = this
-    return this[dimension]() + sides.reduce(function(total, prop) {
-        return total + toNumber(self.css('padding' + prop))
-      }, 0)
+    var el = this[0]
+
+    return Sides.reduce(function(total, Side) {
+      return total - toNumber(_getStyle(el, 'padding' + Side))
+    }, this['inner' + Dimension]())
+  }
+
+  yenFn['inner' + Dimension] = function() {
+    if (this.length === 0) return null
+
+    var el = this[0]
+
+    return Sides.reduce(function(total, Side) {
+      return total - toNumber(_getStyle(el, 'border' + Side + 'Width'))
+    }, this['outer' + Dimension]())
   }
 
   yenFn['outer' + Dimension] = function(includeMargin) {
-    if (!this.length) return null
+    if (this.length === 0) return null
 
-    var self = this
-    var result = this['inner' + Dimension]()
-
-    result += sides.reduce(function(total, prop) {
-      return total + toNumber(self.css('border' + prop + 'Width'))
-    }, 0)
+    var el = this[0]
+    var result = getOffsetWidthOrHeight(el)
 
     if (includeMargin) {
-      result += sides.reduce(function(total, prop) {
-        return total + toNumber(self.css('margin' + prop))
-      }, 0)
+      result = Sides.reduce(function(total, Side) {
+        return total + toNumber(_getStyle(el, 'margin' + Side))
+      }, result)
     }
 
     return result
@@ -870,8 +995,8 @@ yenFn.css = function(p, v) {
 
   return this.each(function(el) {
     if (typeof v === 'undefined' && typeof p === 'object') {
-      for (var prop in p) {
-        _setStyle(el, camelize(prop), p[prop])
+      for (var name in p) {
+        _setStyle(el, camelize(name), p[name])
       }
     }
     else {
@@ -1005,6 +1130,13 @@ yenFn.trigger = function(e) {
 }
 
 yen.Events = Events
+
+yen.css = _getStyle
+yen.cssHooks = _cssHooks
+yen.cssProps = _cssProps
+yen.support = support
+yen.swap = swap
+yen.unique = _uniq
 
 
 module.exports = yen
