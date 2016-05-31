@@ -11,7 +11,9 @@ describe('yen', function() {
     before(function(done) {
       $('#fixture').html(heredoc(function() {/*
         <div class="rect"></div>
-        <div class="rect-hidden" style="display:none"></div>
+        <div class="rect-hidden" style="display:none">
+          <div style="width:20px"></div>
+        </div>
         <img src="https://img.alicdn.com/tps/TB1vy9CLVXXXXcvXFXXXXXXXXXX-120-60.png" alt="test image" class="img">
         <img src="https://img.alicdn.com/tps/TB1vy9CLVXXXXcvXFXXXXXXXXXX-120-60.png" alt="test image" class="img-hidden" style="display:none">
       */}))
@@ -94,6 +96,7 @@ describe('yen', function() {
     it('.width', function() {
       expect($('#fixture .rect').width()).to.equal(100)
       expect($('#fixture .rect-hidden').width()).to.equal(100)
+      expect($('#fixture .rect-hidden div').width()).to.equal(20)
       expect($('#fixture .img').width()).to.equal(120)
       expect($('#fixture .img-hidden').width()).to.equal(120)
       expect($().width()).to.be(null)
