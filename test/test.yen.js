@@ -14,11 +14,14 @@ describe('yen', function() {
         <div class="rect-hidden" style="display:none">
           <div style="width:20px"></div>
         </div>
+        <div class="rect-border-box"></div>
         <img src="https://img.alicdn.com/tps/TB1vy9CLVXXXXcvXFXXXXXXXXXX-120-60.png" alt="test image" class="img">
         <img src="https://img.alicdn.com/tps/TB1vy9CLVXXXXcvXFXXXXXXXXXX-120-60.png" alt="test image" class="img-hidden" style="display:none">
       */}))
 
-      $('#fixture div').css({
+      $('#fixture .rect-border-box').css('box-sizing', 'border-box')
+
+      $('#fixture > div').css({
         width: '100px',
         height: '50px',
         padding: '10px 20px',
@@ -39,6 +42,9 @@ describe('yen', function() {
     it('.height', function() {
       expect($('#fixture .rect').height()).to.equal(50)
       expect($('#fixture .rect-hidden').height()).to.equal(50)
+      if ($.support.boxSizing) {
+        expect($('#fixture .rect-border-box').height()).to.equal(20)
+      }
       expect($('#fixture .img').height()).to.equal(60)
       expect($('#fixture .img-hidden').height()).to.equal(60)
       expect($().height()).to.be(null)
@@ -47,6 +53,9 @@ describe('yen', function() {
     it('.innerHeight', function() {
       expect($('#fixture .rect').innerHeight()).to.equal(70)
       expect($('#fixture .rect-hidden').innerHeight()).to.equal(70)
+      if ($.support.boxSizing) {
+        expect($('#fixture .rect-border-box').innerHeight()).to.equal(40)
+      }
       expect($('#fixture .img').innerHeight()).to.equal(60)
       expect($('#fixture .img-hidden').innerHeight()).to.equal(60)
       expect($().innerHeight()).to.be(null)
@@ -55,6 +64,9 @@ describe('yen', function() {
     it('.innerWidth', function() {
       expect($('#fixture .rect').innerWidth()).to.equal(140)
       expect($('#fixture .rect-hidden').innerWidth()).to.equal(140)
+      if ($.support.boxSizing) {
+        expect($('#fixture .rect-border-box').innerWidth()).to.equal(90)
+      }
       expect($('#fixture .img').innerWidth()).to.equal(120)
       expect($('#fixture .img-hidden').innerWidth()).to.equal(120)
       expect($().innerWidth()).to.be(null)
@@ -73,6 +85,9 @@ describe('yen', function() {
       expect($('#fixture .rect').outerHeight(true)).to.equal(100)
       expect($('#fixture .rect-hidden').outerHeight()).to.equal(80)
       expect($('#fixture .rect-hidden').outerHeight(true)).to.equal(100)
+      if ($.support.boxSizing) {
+        expect($('#fixture .rect-border-box').outerHeight()).to.equal(50)
+      }
       expect($('#fixture .img').outerHeight()).to.equal(60)
       expect($('#fixture .img').outerHeight(true)).to.equal(60)
       expect($('#fixture .img-hidden').outerHeight()).to.equal(60)
@@ -85,6 +100,9 @@ describe('yen', function() {
       expect($('#fixture .rect').outerWidth(true)).to.equal(160)
       expect($('#fixture .rect-hidden').outerWidth()).to.equal(150)
       expect($('#fixture .rect-hidden').outerWidth(true)).to.equal(160)
+      if ($.support.boxSizing) {
+        expect($('#fixture .rect-border-box').outerWidth()).to.equal(100)
+      }
       expect($('#fixture .img').outerWidth()).to.equal(120)
       expect($('#fixture .img').outerWidth(true)).to.equal(120)
       expect($('#fixture .img-hidden').outerHeight()).to.equal(60)
@@ -97,6 +115,9 @@ describe('yen', function() {
       expect($('#fixture .rect').width()).to.equal(100)
       expect($('#fixture .rect-hidden').width()).to.equal(100)
       expect($('#fixture .rect-hidden div').width()).to.equal(20)
+      if ($.support.boxSizing) {
+        expect($('#fixture .rect-border-box').width()).to.equal(50)
+      }
       expect($('#fixture .img').width()).to.equal(120)
       expect($('#fixture .img-hidden').width()).to.equal(120)
       expect($().width()).to.be(null)
