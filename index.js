@@ -923,14 +923,28 @@ yenFn.hide = function() {
     display: 'block'
   }
 
-  function getOffsetWidthOrHeight(el) {
+  function getOffsetWidthOrHeight(el, isBorderBox) {
     if (rdisplayswap.test(_getStyle(el, 'display')) && el.offsetWidth === 0) {
       return swap(el, cssShow, function() {
         return el['offset' + Dimension]
       })
     }
 
-    return el['offset' + Dimension]
+    var result = el['offset' + Dimension]
+
+    function addPaddingAndBorder(total, Side) {
+      return total + toNumber(_getStyle(el, 'padding' + Side))
+        + toNumber(_getStyle(el, 'border' + Side + 'Width'))
+    }
+
+    if (result <= 0 || result == null) {
+      result = toNumber(_getStyles(el)[dimension])
+      if (!isBorderBox) {
+        result = Sides.reduce(addPaddingAndBorder, result)
+      }
+    }
+
+    return result
   }
 
   _cssHooks[dimension] = {
@@ -939,13 +953,16 @@ yenFn.hide = function() {
         return styles[dimension]
       }
 
-      var result = getOffsetWidthOrHeight(el)
+      var isBorderBox = support.boxSizing && _getStyle(el, 'box-sizing') === 'border-box'
+      var result = getOffsetWidthOrHeight(el, isBorderBox)
 
-      if (!support.boxSizing || _getStyle(el, 'box-sizing') !== 'border-box') {
-        result = Sides.reduce(function(total, Side) {
-          return total - toNumber(_getStyle(el, 'padding' + Side))
-            - toNumber(_getStyle(el, 'border' + Side + 'Width'))
-        }, result)
+      function substractPaddingAndBorder(total, Side) {
+        return total - toNumber(_getStyle(el, 'padding' + Side))
+          - toNumber(_getStyle(el, 'border' + Side + 'Width'))
+      }
+
+      if (!isBorderBox) {
+        result = Sides.reduce(substractPaddingAndBorder, result)
       }
 
       return result + 'px'
@@ -976,7 +993,8 @@ yenFn.hide = function() {
     if (this.length === 0) return null
 
     var el = this[0]
-    var result = getOffsetWidthOrHeight(el)
+    var isBorderBox = support.boxSizing && _getStyle(el, 'box-sizing') === 'border-box'
+    var result = getOffsetWidthOrHeight(el, isBorderBox)
 
     if (includeMargin) {
       result = Sides.reduce(function(total, Side) {
