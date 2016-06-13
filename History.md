@@ -1,4 +1,11 @@
 
+1.4.0 / 2016-06-13
+==================
+
+  * New: support :checked & .prop() (#39)
+  * Fix: Width() regression bug (#38)
+
+
 1.3.0 / 2016-03-11
 ==================
 
@@ -38,6 +45,7 @@
  * Fixed es5 and json2 url
  * Fixed #22 `.data({})`
  * Fixed #23 `.is(selection)`
+
 
 1.2.0 / 2015-06-23
 ==================
