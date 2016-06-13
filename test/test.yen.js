@@ -183,6 +183,18 @@ describe('yen', function() {
       expect(el.attr('foo')).to.equal(undefined)
     })
 
+    it('.prop', function() {
+      // IE[678] does not allow changing input type once it's already in the
+      // document. So let's create one on the fly here.
+      // http://stackoverflow.com/a/7618400/179691
+      var el = $('<input>')
+      expect(el.prop('type')).to.equal('text')
+      el.prop('type', 'checkbox')
+      expect(el.prop('checked')).to.equal(false)
+      el.prop('checked', true)
+      expect(el.prop('checked')).to.equal(true)
+    })
+
     it('.hasAttr', function() {
       var el = $('.fixture-attr')
       expect(el.hasAttr('data-foo')).to.be(true)
@@ -268,6 +280,13 @@ describe('yen', function() {
             <a id="e" class="b f" c="d" g></a>
           </li>
         </ul>
+        <div class="pseudo">
+          <input>
+          <input type="checkbox" checked>
+          <select>
+            <option selected></option>
+          </select>
+        </div>
       */}))
     })
 
@@ -308,6 +327,12 @@ describe('yen', function() {
     it('can query pseudo-class selector', function() {
       expect($('ul li:first-child', $('#ul')[0]).length).to.be(1)
       expect($('ul :first-child', $('#ul')[0]).length).to.be(3)
+
+      expect($('ul li:last-child', $('#ul')[0]).length).to.be(1)
+      expect($('ul :last-child', $('#ul')[0]).length).to.be(3)
+
+      expect($('.pseudo :checked', $('.pseudo')).length).to.be(2)
+      expect($('.pseudo input:checked', $('.pseudo')).length).to.be(1)
     })
 
     it('can query comma-separated selector', function() {

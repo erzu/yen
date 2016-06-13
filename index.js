@@ -15,15 +15,6 @@ function camelize(str) {
   })
 }
 
-/*
- * Turns marginLeft into margin-left
- */
-function dasherize(str) {
-  return str.replace(/([A-Z])/g, function(m, chr) {
-    return '-' + chr.toLowerCase()
-  })
-}
-
 function capitalize(str) {
   return str.replace(/^([a-z])/, function(m, chr) {
     return chr.toUpperCase()
@@ -82,6 +73,9 @@ var doc = win.document
  */
 var Node = win.Node || {
   ELEMENT_NODE: 1,
+  ATTRIBUTE_NODE: 2,
+  TEXT_NODE: 3,
+  COMMENT_NODE: 8,
   DOCUMENT_NODE: 9
 }
 
@@ -215,6 +209,36 @@ function _matchesSimpleSelectorList(el, selector) {
   return true
 }
 
+function _matchesAttribute(el, selector) {
+  var matchResult = selector.match(/^\[(.+?)(=(["']?)(.*?)\3)?]$/i)
+  var attrName = matchResult[1]
+  var hasAttrValue = !!matchResult[2]
+  var attrValue = hasAttrValue ? matchResult[4] : undefined
+
+  if (!attrName) {
+    throw new Error('Invalid attribute selector: ' + selector)
+  }
+
+  var value = attrName === 'class' ? el.className : el.getAttribute(attrName)
+  return attrValue === undefined ? value !== null : value === attrValue
+}
+
+function _matchesPseudoClass(el, selector) {
+  var pseudoClass = selector.slice(1)
+
+  switch(pseudoClass){
+    case 'first-child' :
+      return (el.parentNode.firstElementChild || _getFirstElementChild(el.parentNode)) === el
+    case 'last-child':
+      return (el.parentNode.lastElementChild || _getLastElementChild(el.parentNode)) === el
+    case 'checked':
+      // stolen from sizzle
+      // > In CSS3, :checked should return both checked and selected elements
+			// > http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+      var nodeName = el.nodeName.toLowerCase()
+			return (nodeName === 'input' && !!el.checked) || (nodeName === 'option' && !!el.selected)
+  }
+}
 
 function _matches(el, selector) {
   if (!el) return false
@@ -228,27 +252,10 @@ function _matches(el, selector) {
     return _hasClass(el, selector.slice(1))
   }
   else if (fchar === '[') {
-    var matchResult = selector.match(/^\[(.+?)(=(["']?)(.*?)\3)?]$/i)
-    var attrName = matchResult[1]
-    var hasAttrValue = !!matchResult[2]
-    var attrValue = hasAttrValue ? matchResult[4] : undefined
-
-    if (!attrName) {
-      throw new Error('Invalid attribute selector: ' + selector)
-    }
-
-    var value = attrName === 'class' ? el.className : el.getAttribute(attrName)
-    return attrValue === undefined ? value !== null : value === attrValue
+    return _matchesAttribute(el, selector)
   }
   else if (fchar === ':') {
-    var pseudoClass = selector.slice(1)
-
-    switch(pseudoClass){
-      case 'first-child' :
-        return (el.parentNode.firstElementChild || _getFirstElementChild(el.parentNode)) === el
-      case 'last-child':
-        return (el.parentNode.lastElementChild || _getLastElementChild(el.parentNode)) === el
-    }
+    return _matchesPseudoClass(el, selector)
   }
   else {
     return el.tagName === selector.toUpperCase()
@@ -477,7 +484,14 @@ function YSet(selector, context) {
       return context.find(selector)
     }
     else if (context.querySelectorAll) {
-      nodes = context.querySelectorAll(selector)
+      try {
+        nodes = context.querySelectorAll(selector)
+      } catch (e) {
+        // IE8 supports a subset of CSS 3 selectors
+        // - http://caniuse.com/#feat=queryselector
+        // - http://caniuse.com/#feat=css-sel3
+        nodes = _querySelectorAll(selector, context)
+      }
     }
     else {
       nodes = _querySelectorAll(selector, context)
@@ -702,6 +716,27 @@ yenFn.attr = function(p, v) {
   else {
     return this.each(function(el) {
       el.setAttribute(p, v)
+    })
+  }
+}
+
+yenFn.prop = function(p, v) {
+  var el = this.length > 0 && this[0]
+  var nType = el.nodeType
+
+  // Don't get/set properties on text, comment and attribute nodes
+  if (!el ||
+      nType === Node.TEXT_NODE ||
+      nType === Node.COMMENT_NODE ||
+      nType === Node.ATTRIBUTE_NODE) {
+    return
+  }
+  else if (typeof v === 'undefined') {
+    return el[p]
+  }
+  else {
+    return this.each(function(el) {
+      el[p] = v
     })
   }
 }
