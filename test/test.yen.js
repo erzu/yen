@@ -195,6 +195,16 @@ describe('yen', function() {
       expect(el.prop('checked')).to.equal(true)
     })
 
+    it('.prop for <video>', function() {
+      var el = $('<video>')
+      el.prop('controls', true)
+      expect(el.prop('controls')).to.equal(true)
+      el.prop('loop', true)
+      expect(el.prop('loop')).to.equal(true)
+      el.prop('loop', false)
+      expect(el.prop('loop')).to.equal(false)
+    })
+
     it('.hasAttr', function() {
       var el = $('.fixture-attr')
       expect(el.hasAttr('data-foo')).to.be(true)
