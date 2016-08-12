@@ -248,7 +248,7 @@ Events.on = function(elem, type, fn) {
 
   if (!fn.guid) fn.guid = nextGuid++
 
-  data.handlers[type].push(fn)
+  data.handlers[type].unshift(fn)
 
   if (!data.dispatcher) {
     data.disabled = false
@@ -263,7 +263,7 @@ Events.on = function(elem, type, fn) {
 
       var handlers = data.handlers[event.type]
       if (handlers) {
-        for (var n = 0; n < handlers.length; n++) {
+        for (var n = handlers.length - 1; n >= 0; n--) {
           handlers[n].call(elem, event)
         }
       }

@@ -208,4 +208,23 @@ describe('yen/events', function() {
       expect(count).to.be(1)
     })
   })
+
+  describe('Miscellaneous obstacles', function() {
+    it('can remove certain handler without interfering other handlers', function() {
+      var obj = {}
+      var formerHandler = function() {
+        Events.off(obj, 'foo', formerHandler)
+      }
+      var latterHandler = function(e) {
+        e.currentTarget.touchedByLatter = true
+      }
+
+      Events.on(obj, 'foo', formerHandler)
+      Events.on(obj, 'foo', latterHandler)
+
+      Events.trigger(obj, 'foo')
+
+      expect(obj.touchedByLatter).to.be(true)
+    })
+  })
 })
