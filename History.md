@@ -1,4 +1,11 @@
 
+1.4.1 / 2016-08-12
+==================
+
+  * Fix: reverse handlers because its size may vary
+  * Chore: test case .prop for <video>
+
+
 1.4.0 / 2016-06-13
 ==================
 
