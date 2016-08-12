@@ -15,8 +15,8 @@ describe('yen', function() {
           <div style="width:20px"></div>
         </div>
         <div class="rect-border-box"></div>
-        <img src="https://img.alicdn.com/tps/TB1vy9CLVXXXXcvXFXXXXXXXXXX-120-60.png" alt="test image" class="img">
-        <img src="https://img.alicdn.com/tps/TB1vy9CLVXXXXcvXFXXXXXXXXXX-120-60.png" alt="test image" class="img-hidden" style="display:none">
+        <img src="http://img.alicdn.com/tps/TB1vy9CLVXXXXcvXFXXXXXXXXXX-120-60.png" alt="test image" class="img">
+        <img src="http://img.alicdn.com/tps/TB1vy9CLVXXXXcvXFXXXXXXXXXX-120-60.png" alt="test image" class="img-hidden" style="display:none">
       */}))
 
       $('#fixture .rect-border-box').css('box-sizing', 'border-box')
@@ -155,23 +155,36 @@ describe('yen', function() {
 
     it('.hasClass', function() {
       expect($('.entry').last().hasClass('entry-last')).to.be(true)
-      expect($('.entry').hasClass('entry-last')).to.be(false)
+      expect($('.entry').last().hasClass('entry entry-last')).to.be(true)
+      expect($('.entry').first().hasClass('entry-last')).to.be(false)
+      expect($('.entry').hasClass('entry entry-last')).to.be(true)
       expect($().hasClass('foo')).to.be(false)
     })
 
     it('.addClass', function() {
       $('.entry-last').addClass('hidden')
       expect($('.entry-last').hasClass('hidden')).to.be(true)
+      $('.entry-last').addClass('hidden hidden-last')
+      expect($('.entry-last').hasClass('hidden')).to.be(true)
+      expect($('.entry-last').hasClass('hidden-last')).to.be(true)
     })
 
     it('.removeClass', function() {
       $('.entry-last').removeClass('hidden')
       expect($('.entry-last').hasClass('hidden')).to.be(false)
+      $('.entry-last').removeClass('hidden hidden-last')
+      expect($('.entry-last').hasClass('hidden-last')).to.be(false)
     })
 
     it('.toggleClass', function() {
       $('.entry').toggleClass('entry-current')
       expect($('.entry-current').length).to.be(4)
+      var entries = $('.entry').toggleClass('entry')
+      expect(entries.hasClass('entry')).to.be(false)
+      // restore entries to the initial state
+      entries.toggleClass('entry entry-current')
+      expect($('.entry').length).to.be(5)
+      expect($('.entry-current').length).to.be(1)
     })
 
     it('.attr', function() {

@@ -83,12 +83,14 @@ var Node = win.Node || {
 /*
  * Glue methods for compatiblity
  */
+var rspace = /\s+/
+
 function _hasClass(el, cls) {
   if (el.classList) {
     return el.classList.contains(cls)
   }
   else if (el.className) {
-    return el.className.trim().split(/\s+/).indexOf(cls) >= 0
+    return el.className.trim().split(rspace).indexOf(cls) >= 0
   }
 }
 
@@ -97,7 +99,7 @@ function _removeClass(el, cls) {
     el.classList.remove(cls)
   }
   else {
-    var classes = el.className.trim().split(/\s+/)
+    var classes = el.className.trim().split(rspace)
 
     for (var i = classes.length - 1; i >= 0; i--) {
       if (classes[i] === cls) {
@@ -651,36 +653,41 @@ yenFn.every = arrayFn.every
 /*
  * Manipulating class
  */
-yenFn.hasClass = function(cls) {
+yenFn.hasClass = function(className) {
   if (this.length) {
-    return this.every(function(el) {
-      return _hasClass(el, cls)
+    var classList = className.split(rspace)
+    return this.some(function(el) {
+      return classList.every(_hasClass.bind(null, el))
     })
   } else {
     return false
   }
 }
 
-yenFn.addClass = function(cls) {
+yenFn.addClass = function(className) {
+  var classList = className.split(rspace)
   return this.each(function(el) {
-    _addClass(el, cls)
+    classList.forEach(_addClass.bind(null, el))
   })
 }
 
-yenFn.removeClass = function(cls) {
+yenFn.removeClass = function(className) {
+  var classList = className.split(rspace)
   return this.each(function(el) {
-    _removeClass(el, cls)
+    classList.forEach(_removeClass.bind(null, el))
   })
 }
 
-yenFn.toggleClass = function(cls) {
+yenFn.toggleClass = function(className) {
+  var classList = className.split(rspace)
   return this.each(function(el) {
-    if (_hasClass(el, cls)) {
-      _removeClass(el, cls)
-    }
-    else {
-      _addClass(el, cls)
-    }
+    classList.forEach(function(cls) {
+      if (_hasClass(el, cls)) {
+        _removeClass(el, cls)
+      } else {
+        _addClass(el, cls)
+      }
+    })
   })
 }
 
