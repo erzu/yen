@@ -1,4 +1,11 @@
 
+1.5.0 / 2016-12-29
+==================
+
+  * New: support space separated className
+  * Upgrade: oceanifier@5
+
+
 1.4.1 / 2016-08-12
 ==================
 
