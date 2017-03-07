@@ -236,9 +236,9 @@ function _matchesPseudoClass(el, selector) {
     case 'checked':
       // stolen from sizzle
       // > In CSS3, :checked should return both checked and selected elements
-			// > http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
+      // > http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
       var nodeName = el.nodeName.toLowerCase()
-			return (nodeName === 'input' && !!el.checked) || (nodeName === 'option' && !!el.selected)
+      return (nodeName === 'input' && !!el.checked) || (nodeName === 'option' && !!el.selected)
   }
 }
 
@@ -1074,6 +1074,14 @@ yenFn.prepend = function(child) {
     new YSet(child).each(function(childEl) {
       el.insertBefore(childEl, el.firstChild)
     })
+  })
+}
+
+yenFn.prependTo = function(parent) {
+  parent = new YSet(parent)
+
+  return this.each(function(el) {
+    parent.prepend(el)
   })
 }
 

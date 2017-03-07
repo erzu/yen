@@ -265,6 +265,15 @@ describe('yen', function() {
       expect(el.children().html()).to.equal('Test append-dom')
     })
 
+    it('.appendTo [dom]', function() {
+      var el = $('.fixture-append')
+      var div = document.createElement('div')
+      $(div).html('Test appendTo-dom')
+
+      $(div).appendTo(el)
+      expect($(el.children()).last().html()).to.equal('Test appendTo-dom')
+    })
+
     it('.prepend [string]', function() {
       var el = $('.fixture-prepend')
 
@@ -279,6 +288,15 @@ describe('yen', function() {
       $(div).html('Test prepend-dom')
       el.prepend(div)
       expect($(el.children()[0]).html()).to.equal('Test prepend-dom')
+    })
+
+    it('.prependTo [dom]', function() {
+      var el = $('.fixture-prepend')
+      var div = document.createElement('div')
+      $(div).html('Test prependTo-dom')
+
+      $(div).prependTo(el)
+      expect($(el.children().first()).html()).to.equal('Test prependTo-dom')
     })
 
     it('.empty', function(){
