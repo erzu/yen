@@ -253,6 +253,7 @@ Events.on = function(elem, type, fn) {
   if (!data.dispatcher) {
     data.disabled = false
     data.dispatcher = function(event) {
+      var elem = this
       if (data.disabled) return
       event = (!elem.addEventListener && !elem.attachEvent) ?
               event : _fixEvent(event)

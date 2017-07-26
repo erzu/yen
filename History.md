@@ -1,39 +1,44 @@
+1.6.1 / 2017-07-26
+==================
+
+ * Fix: shortcut `elem` to make it faster on decent browsers and to work properly on IE8 after UglifyJS compression.
+
 
 1.6.0 / 2017-03-08
 ==================
 
-  * New: .prependTo()
+ * New: .prependTo()
 
 
 1.5.0 / 2016-12-29
 ==================
 
-  * New: support space separated className
-  * Upgrade: oceanifier@5
+ * New: support space separated className
+ * Upgrade: oceanifier@5
 
 
 1.4.1 / 2016-08-12
 ==================
 
-  * Fix: reverse handlers because its size may vary
-  * Chore: test case .prop for <video>
+ * Fix: reverse handlers because its size may vary
+ * Chore: test case .prop for <video>
 
 
 1.4.0 / 2016-06-13
 ==================
 
-  * New: support :checked & .prop() (#39)
-  * Fix: Width() regression bug (#38)
+ * New: support :checked & .prop() (#39)
+ * Fix: Width() regression bug (#38)
 
 
 1.3.0 / 2016-03-11
 ==================
 
-  * Fix: make .height(), .innerHeight(), .outerHeight()
-  * Fix: toInteger->toNumber
-  * Doc: goal
-  * Doc: english readme
-  * Upgrade: oceanifier@4.x
+ * Fix: make .height(), .innerHeight(), .outerHeight()
+ * Fix: toInteger->toNumber
+ * Doc: goal
+ * Doc: english readme
+ * Upgrade: oceanifier@4.x
 
 
 1.2.4 / 2015-07-09
@@ -53,7 +58,7 @@
 ==================
 
  * Found an edge case in IE8, see readme for more information.
- * Make sure the context passed around is correct. 
+ * Make sure the context passed around is correct.
  * Fixes #25
  * Closes #22, let the incompatibility be.
 
