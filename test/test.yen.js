@@ -30,7 +30,7 @@ describe('yen', function() {
       })
 
       $('#fixture').show()
-      $('#fixture img').on('load', function() {
+      $('#fixture img').first().on('load', function() {
         done()
       })
     })

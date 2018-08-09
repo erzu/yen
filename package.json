@@ -7,15 +7,14 @@
     "url": "git@github.com:erzu/yen.git"
   },
   "devDependencies": {
-    "oceanifier": "~5.0.0-beta.1",
-    "expect.js": "~0.3.1",
-    "heredoc": "~1.2.0",
-    "mocha": "~1.20.1",
-    "totoro": "~2.0.0"
+    "@cara/porter-cli": "^2.0.2",
+    "expect.js": "^0.3.1",
+    "heredoc": "^1.2.0",
+    "mocha": "^3.5.3"
   },
   "scripts": {
-    "start": "ocean serve",
-    "test": "totoro --runner=http://`ocean ip`:5000/test/runner.html"
+    "start": "porter serve --paths .",
+    "test": "DEBUG=porter,$DEBUG porter serve --paths . --headless"
   },
   "license": "MIT"
 }
