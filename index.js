@@ -1205,6 +1205,7 @@ yen.cssProps = _cssProps
 yen.support = support
 yen.swap = swap
 yen.unique = _uniq
+yen.camelize = camelize
 
 
 module.exports = yen

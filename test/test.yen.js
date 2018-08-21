@@ -501,6 +501,10 @@ describe('yen', function() {
 
 
   describe('utilities', function() {
+    it('.camelize()', function() {
+      expect($.camelize('foo-bar')).to.eql('fooBar')
+    })
+
     it('.each', function() {
       $([0, 1, 2, 3]).each(function(item, i) {
         expect(item).to.equal(i)
