@@ -400,7 +400,7 @@ describe('yen', function() {
           <li class="ham"></li>
         </ol>
         <ol>
-          <li></li>
+          <li class="baz"></li>
           <li></li>
         </ol>
       */}))
@@ -474,6 +474,20 @@ describe('yen', function() {
     it('.get', function() {
       var child = $('#fixture').find('ol').children().get(1)
       expect(child.hasClass('bar')).to.be(true)
+    })
+
+    it('.index', function() {
+      expect($('#fixture ol').find('.ham').index()).to.be(2)
+      expect($('#fixture ol').find('.some').index()).to.be(-1)
+
+      // .index(selector)
+      expect($('#fixture ol').find('.ham').index('')).to.be(2)
+      expect($('#fixture ol').find('.ham').index('li')).to.be(2)
+      expect($('#fixture ol').find('.ham').index('ol')).to.be(-1)
+      expect($('#fixture ol').find('.foo').index('li')).to.be(0)
+
+      // .index(yen element)
+      expect($('#fixture li').index($('.baz'))).to.be(3)
     })
 
     it('.find', function() {

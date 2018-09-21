@@ -432,6 +432,23 @@ function _uniq(arr) {
   return result
 }
 
+function _inArray(elem, arr, i) {
+  var len
+
+  if (arr) {
+    len = arr.length
+    i = i ? i < 0 ? Math.max(0, len + i) : i : 0
+
+    for (; i < len; i++) {
+      if (i in arr && arr[i] === elem) {
+        return i
+      }
+    }
+  }
+
+  return -1
+}
+
 
 /*
  * support
@@ -834,6 +851,26 @@ yenFn.last = function() {
 
 yenFn.get = function(index) {
   return new YSet(this[index])
+}
+
+yenFn.index = function(elem) {
+  var el = this[0]
+
+  // No argument, return index in parent
+  if (!elem) {
+    // return (el && el.parentNode) ? [].slice.call(el.parentNode.children).indexOf(el) : -1
+    return (el && el.parentNode) ? _inArray(el, el.parentNode.children) : -1
+  }
+
+  // index in selector
+  if (typeof elem === 'string') {
+    var els = new YSet(el.parentNode).find(elem)
+    return _inArray(el, els)
+  }
+
+  // Locate the position of the desired element
+  // TODO 这里需要支持非 yen 对象
+  return _inArray(elem[0], this)
 }
 
 yenFn.children = function(selector) {
